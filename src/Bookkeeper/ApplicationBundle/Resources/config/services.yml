@@ -1,0 +1,4 @@
+services:
+#    bookkeeper_application.example:
+#        class: Bookkeeper\ApplicationBundle\Example
+#        arguments: [@service_id, "plain_value", %parameter%]
