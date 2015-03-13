@@ -14,9 +14,10 @@ class DefaultControllerTest extends WebTestCase
     {
         $client = static::createClient();
 
-        $crawler = $client->request('GET', '/');
+        $client->request('GET', '/');
 
-        $this->assertTrue($crawler->filter('html:contains("Hello World")')->count() > 0,
-            'The HomePage do not contain "Hello World"');
+        $this->assertTrue($client->getResponse()->isSuccessful(), 'Request to "/" was not successful');
+
+        $this->assertEquals('text/html; charset=UTF-8', $client->getResponse()->headers->get('Content-Type'));
     }
 }
