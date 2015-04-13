@@ -129,4 +129,14 @@ class Book
 
         return $this;
     }
+
+    /**
+     * @param array $data
+     */
+    public function populate(array $data)
+    {
+        $this->setTitle($data['title'])
+             ->setDescription($data['description'])
+             ->setPages($data['pages']);
+    }
 }
