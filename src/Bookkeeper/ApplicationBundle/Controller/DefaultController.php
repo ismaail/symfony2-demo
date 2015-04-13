@@ -4,6 +4,8 @@ namespace Bookkeeper\ApplicationBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Bookkeeper\ApplicationBundle\Exception\ApplicationException;
+use Bookkeeper\ApplicationBundle\Entity\Book;
+use Bookkeeper\ApplicationBundle\Form\BookType;
 
 /**
  * Class DefaultController
@@ -17,6 +19,37 @@ class DefaultController extends Controller
     public function indexAction()
     {
         return $this->render('BookkeeperApplicationBundle:Default:index.html.twig');
+    }
+
+    /**
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function newAction()
+    {
+        return $this->render('BookkeeperApplicationBundle:Default:new.html.twig', array(
+            'form' => $this->createBookTypeForm()->createView(),
+        ));
+    }
+
+    /**
+     * Create Book form
+     *
+     * @param bool $isCreationForm
+     *
+     * @return \Symfony\Component\Form\Form
+     */
+    protected function createBookTypeForm($isCreationForm = true)
+    {
+        $book = new Book();
+
+        $form = $this->createForm(new BookType(), $book, array(
+            'action' => $this->generateUrl('bookkeeper_application_book_new'),
+            'method' => 'POST',
+        ));
+
+        $form->add('submit', 'submit', array('label' => $isCreationForm ? 'Create' : 'Update'));
+
+        return $form;
     }
 
     /**

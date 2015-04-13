@@ -1,3 +1,7 @@
 bookkeeper_application_homepage:
     path:     /
     defaults: { _controller: BookkeeperApplicationBundle:Default:index }
+
+bookkeeper_application_book_new:
+    path:     /new
+    defaults: { _controller: BookkeeperApplicationBundle:Default:new }
