@@ -29,7 +29,7 @@ class BookTypeTest extends TypeTestCase
         $form->submit($formData);
 
         $this->assertTrue($form->isSynchronized());
-        $this->assertEquals($object, $form->getData(), "Book form data and Book entity object don't have same data");
+        $this->assertEquals($object, $form->getData(), "Book form data and Book entity object are the same type");
     }
 
     public function testFormViewHasAllDefinedElements()
