@@ -32,6 +32,21 @@ class BookTypeTest extends TypeTestCase
         $this->assertEquals($object, $form->getData(), "Book form data and Book entity object are the same type");
     }
 
+    public function testFormHasAllDefinedElements()
+    {
+        $formElements = array('title', 'description', 'pages', 'submit');
+
+        $type = new BookType();
+        $form = $this->factory->create($type);
+
+        // Add Submit button
+        $form->add('submit', 'submit');
+
+        foreach ($formElements as $element) {
+            $this->assertTrue($form->has($element), sprintf("Book form don't have element '%s'", $element));
+        }
+    }
+
     public function testFormViewHasAllDefinedElements()
     {
         $formElements = array('title', 'description', 'pages', 'submit');
