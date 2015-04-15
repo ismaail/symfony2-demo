@@ -3,6 +3,7 @@
 namespace Bookkeeper\ApplicationBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Request;
 use Bookkeeper\ApplicationBundle\Exception\ApplicationException;
 use Bookkeeper\ApplicationBundle\Entity\Book;
 use Bookkeeper\ApplicationBundle\Form\BookType;
@@ -27,29 +28,66 @@ class DefaultController extends Controller
     public function newAction()
     {
         return $this->render('BookkeeperApplicationBundle:Default:new.html.twig', array(
-            'form' => $this->createBookTypeForm()->createView(),
+            'form' => $this->createBookTypeForm(new Book())->createView(),
+        ));
+    }
+
+    /**
+     * @param Request $request
+     *
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function createAction(Request $request)
+    {
+        $book = new Book();
+        $form = $this->createBookTypeForm($book);
+
+        $form->handleRequest($request);
+
+        if ($form->isValid()) {
+            $this->createNewBook($book);
+            $this->get('session')->getFlashBag()->add('success', 'Book has been created.');
+
+            return $this->redirect($this->generateUrl('book_new'), 201);
+        }
+
+        $this->get('session')->getFlashBag()->add('error', 'Error creating a new book');
+
+        return $this->render('BookkeeperApplicationBundle:Default:new.html.twig', array(
+            'form' => $form->createView(),
         ));
     }
 
     /**
      * Create Book form
      *
+     * @param Book $book
      * @param bool $isCreationForm
      *
      * @return \Symfony\Component\Form\Form
      */
-    protected function createBookTypeForm($isCreationForm = true)
+    protected function createBookTypeForm(Book $book, $isCreationForm = true)
     {
-        $book = new Book();
-
         $form = $this->createForm(new BookType(), $book, array(
-            'action' => $this->generateUrl('bookkeeper_application_book_new'),
+            'action' => $this->generateUrl('book_create'),
             'method' => 'POST',
         ));
 
         $form->add('submit', 'submit', array('label' => $isCreationForm ? 'Create' : 'Update'));
 
         return $form;
+    }
+
+    /**
+     * Create new Book in database
+     *
+     * @param Book $book
+     */
+    protected function createNewBook(Book $book)
+    {
+        $em = $this->getDoctrine()->getEntityManager();
+        $em->persist($book);
+        $em->flush();
     }
 
     /**

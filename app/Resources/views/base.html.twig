@@ -6,10 +6,19 @@
         {% block stylesheets %}{% endblock %}
         <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
         <link rel="stylesheet" href="{{ asset('lib/bootstrap-css/css/bootstrap.min.css') }}"/>
+        <link rel="stylesheet" href="{{ asset('css/common.css') }}"/>
     </head>
     <body>
         <div class="container">
-            {% block body %}{% endblock %}
+            {% for flashMessage in app.session.flashbag.get('error') %}
+                <div class="alert col-xs-12 alert-danger">{{ flashMessage }}</div>
+            {% endfor %}
+            {% for flashMessage in app.session.flashbag.get('success') %}
+                <div class="alert colxs-md-12 alert-success">{{ flashMessage }}</div>
+            {% endfor %}
+            <div class="clear">
+                {% block body %}{% endblock %}
+            </div>
             {% block javascripts %}{% endblock %}
         </div>
         <script src="http://localhost:35729/livereload.js"></script>
