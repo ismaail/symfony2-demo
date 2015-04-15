@@ -42,7 +42,7 @@ class DefaultController extends Controller
     protected function createBookTypeForm(Book $book, $isCreationForm = true)
     {
         $form = $this->createForm(new BookType(), $book, array(
-            'action' => $this->generateUrl('book_new'),
+            'action' => $this->generateUrl('book_create'),
             'method' => 'POST',
         ));
 
