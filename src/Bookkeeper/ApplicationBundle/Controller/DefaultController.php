@@ -3,6 +3,7 @@
 namespace Bookkeeper\ApplicationBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Request;
 use Bookkeeper\ApplicationBundle\Exception\ApplicationException;
 use Bookkeeper\ApplicationBundle\Entity\Book;
 use Bookkeeper\ApplicationBundle\Form\BookType;
@@ -32,6 +33,32 @@ class DefaultController extends Controller
     }
 
     /**
+     * @param Request $request
+     *
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function createAction(Request $request)
+    {
+        $book = new Book();
+        $form = $this->createBookTypeForm($book);
+
+        $form->handleRequest($request);
+
+        if ($form->isValid()) {
+            $this->createNewBook($book);
+            $this->get('session')->getFlashBag()->add('success', 'Book has been created.');
+
+            return $this->redirect($this->generateUrl('book_new'), 201);
+        }
+
+        $this->get('session')->getFlashBag()->add('error', 'Error creating a new book');
+
+        return $this->render('BookkeeperApplicationBundle:Default:new.html.twig', array(
+            'form' => $form->createView(),
+        ));
+    }
+
+    /**
      * Create Book form
      *
      * @param Book $book
@@ -49,6 +76,18 @@ class DefaultController extends Controller
         $form->add('submit', 'submit', array('label' => $isCreationForm ? 'Create' : 'Update'));
 
         return $form;
+    }
+
+    /**
+     * Create new Book in database
+     *
+     * @param Book $book
+     */
+    protected function createNewBook(Book $book)
+    {
+        $em = $this->getDoctrine()->getEntityManager();
+        $em->persist($book);
+        $em->flush();
     }
 
     /**
