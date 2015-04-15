@@ -5,3 +5,8 @@ home:
 book_new:
     path:     /new
     defaults: { _controller: BookkeeperApplicationBundle:Default:new }
+
+book_create:
+    path: /create
+    defaults: { _controller: "BookkeeperApplicationBundle:Default:create" }
+    requirements: { _method: post }
