@@ -3,6 +3,7 @@
 namespace Bookkeeper\ApplicationBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -32,6 +33,15 @@ class Book
      * @Assert\Length(min=2)
      */
     protected $title;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="string", length=150)
+     *
+     * @Gedmo\Slug(fields={"title"}, separator="-", unique=true)
+     */
+    protected $slug;
 
     /**
      * @var string
@@ -90,6 +100,14 @@ class Book
         $this->title = $title;
 
         return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSlug()
+    {
+        return $this->slug;
     }
 
     /**
