@@ -43,7 +43,7 @@ class DefaultController extends Controller
         $book = new Book();
 
         $form = $this->createForm(new BookType(), $book, array(
-            'action' => $this->generateUrl('bookkeeper_application_book_new'),
+            'action' => $this->generateUrl('book_new'),
             'method' => 'POST',
         ));
 
