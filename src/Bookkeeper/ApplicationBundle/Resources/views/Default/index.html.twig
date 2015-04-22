@@ -24,7 +24,7 @@
             <tr>
                 <td>{{ book.id }}</td>
                 <td>{{ book.title }}</td>
-                <td>{{ book.description }}</td>
+                <td>{{ book.description[:80] ~ '...' }}</td>
                 <td>{{ book.pages }}</td>
             </tr>
             {%  endfor %}
