@@ -22,3 +22,7 @@ parameters:
     email:
         name:          ~
         address:       ~
+
+    books:
+        pagination:
+            limit: 20

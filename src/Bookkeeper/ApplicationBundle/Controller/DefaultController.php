@@ -21,7 +21,9 @@ class DefaultController extends Controller
      */
     public function indexAction(Request $request)
     {
-        $books = $this->getBooks($request->query->get('page', 1), 10);
+        $booksParams = $this->container->getParameter('books');
+
+        $books = $this->getBooks($request->query->get('page', 1), $booksParams['pagination']['limit']);
 
         return $this->render('BookkeeperApplicationBundle:Default:index.html.twig', array(
             'books' => $books,
