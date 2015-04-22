@@ -8,7 +8,8 @@
     <table class="table">
         <thead>
             <tr>
-                <th>Title</th>
+                <th>{{ knp_pagination_sortable(books, 'Id', 'b.id') }}</th>
+                <th{% if books.isSorted('b.Title') %} class="sorted"{% endif %}>{{ knp_pagination_sortable(books, 'Title', 'b.title') }}</th>
                 <th>Description</th>
                 <th>Pages</th>
             </tr>
@@ -21,6 +22,7 @@
         {% else %}
             {% for book in books %}
             <tr>
+                <td>{{ book.id }}</td>
                 <td>{{ book.title }}</td>
                 <td>{{ book.description }}</td>
                 <td>{{ book.pages }}</td>
@@ -29,4 +31,7 @@
         {% endif %}
         </tbody>
     </table>
+    <div class="navigation">
+        {{ knp_pagination_render(books) }}
+    </div>
 {% endblock %}
