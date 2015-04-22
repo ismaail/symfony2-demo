@@ -71,11 +71,10 @@ class DefaultController extends Controller
      */
     protected function getBooks()
     {
-        $qb = $this->getDoctrine()->getEntityManager()->createQueryBuilder();
-        $qb->select('b')
-           ->from('Bookkeeper\ApplicationBundle\Entity\Book', 'b');
+        /** @var \Doctrine\ORM\EntityRepository $repository */
+        $repository = $this->getDoctrine()->getManager()->getRepository('BookkeeperApplicationBundle:Book');
 
-        return $qb->getQuery()->getResult();
+        return $repository->findAll();
     }
 
     /**
@@ -105,7 +104,7 @@ class DefaultController extends Controller
      */
     protected function createNewBook(Book $book)
     {
-        $em = $this->getDoctrine()->getEntityManager();
+        $em = $this->getDoctrine()->getManager();
         $em->persist($book);
         $em->flush();
     }
