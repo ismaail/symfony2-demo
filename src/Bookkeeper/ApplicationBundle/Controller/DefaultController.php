@@ -31,8 +31,10 @@ class DefaultController extends Controller
      */
     public function newAction()
     {
+        $form = $this->createBookTypeForm(new Book());
+
         return $this->render('BookkeeperApplicationBundle:Default:new.html.twig', array(
-            'form' => $this->createBookTypeForm(new Book())->createView(),
+            'form' => $form->createView(),
         ));
     }
 
