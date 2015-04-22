@@ -19,7 +19,11 @@ class DefaultController extends Controller
      */
     public function indexAction()
     {
-        return $this->render('BookkeeperApplicationBundle:Default:index.html.twig');
+        $books = $this->getBooks();
+
+        return $this->render('BookkeeperApplicationBundle:Default:index.html.twig', array(
+            'books' => $books,
+        ));
     }
 
     /**

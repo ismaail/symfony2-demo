@@ -4,4 +4,29 @@
 
 {% block body %}
     <h1>Welcome to Bookkeeper!</h1>
+    <h2>Books list:</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Pages</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% if books is empty %}
+            <tr>
+                <td colspan="3">Empty list</td>
+            </tr>
+        {% else %}
+            {% for book in books %}
+            <tr>
+                <td>{{ book.title }}</td>
+                <td>{{ book.description }}</td>
+                <td>{{ book.pages }}</td>
+            </tr>
+            {%  endfor %}
+        {% endif %}
+        </tbody>
+    </table>
 {% endblock %}
