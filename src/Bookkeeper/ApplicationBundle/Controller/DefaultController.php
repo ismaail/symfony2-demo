@@ -19,7 +19,11 @@ class DefaultController extends Controller
      */
     public function indexAction()
     {
-        return $this->render('BookkeeperApplicationBundle:Default:index.html.twig');
+        $books = $this->getBooks();
+
+        return $this->render('BookkeeperApplicationBundle:Default:index.html.twig', array(
+            'books' => $books,
+        ));
     }
 
     /**
@@ -56,6 +60,20 @@ class DefaultController extends Controller
         return $this->render('BookkeeperApplicationBundle:Default:new.html.twig', array(
             'form' => $form->createView(),
         ));
+    }
+
+    /**
+     * Get all books
+     *
+     * @return \Bookkeeper\ApplicationBundle\Entity\Book[]
+     */
+    protected function getBooks()
+    {
+        $qb = $this->getDoctrine()->getEntityManager()->createQueryBuilder();
+        $qb->select('b')
+           ->from('Bookkeeper\ApplicationBundle\Entity\Book', 'b');
+
+        return $qb->getQuery()->getResult();
     }
 
     /**
