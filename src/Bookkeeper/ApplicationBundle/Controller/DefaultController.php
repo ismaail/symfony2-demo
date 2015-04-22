@@ -54,7 +54,7 @@ class DefaultController extends Controller
             $this->createNewBook($book);
             $this->get('session')->getFlashBag()->add('success', 'Book has been created.');
 
-            return $this->redirect($this->generateUrl('book_new'), 201);
+            return $this->redirect($this->generateUrl('home'), 201);
         }
 
         $this->get('session')->getFlashBag()->add('error', 'Error creating a new book');
