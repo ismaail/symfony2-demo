@@ -15,11 +15,13 @@ use Bookkeeper\ApplicationBundle\Form\BookType;
 class DefaultController extends Controller
 {
     /**
+     * @param Request $request
+     *
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function indexAction()
+    public function indexAction(Request $request)
     {
-        $books = $this->getBooks();
+        $books = $this->getBooks($request->query->get('page', 1), 10);
 
         return $this->render('BookkeeperApplicationBundle:Default:index.html.twig', array(
             'books' => $books,
@@ -65,16 +67,31 @@ class DefaultController extends Controller
     }
 
     /**
-     * Get all books
+     * Get all books using pagination
+     *
+     * @param int $page
+     * @param int $limit
      *
      * @return \Bookkeeper\ApplicationBundle\Entity\Book[]
      */
-    protected function getBooks()
+    protected function getBooks($page, $limit)
     {
-        /** @var \Doctrine\ORM\EntityRepository $repository */
-        $repository = $this->getDoctrine()->getManager()->getRepository('BookkeeperApplicationBundle:Book');
+        /** @var \Doctrine\ORM\EntityManager $em */
+        $em = $this->get('doctrine.orm.entity_manager');
+        $qb = $em->createQueryBuilder();
+        $qb->select('b')
+           ->from('BookkeeperApplicationBundle:Book', 'b')
+           ->orderBy('b.id', 'asc');
 
-        return $repository->findAll();
+        /** @var \Knp\Component\Pager\Paginator $paginator */
+        $paginator  = $this->get('knp_paginator');
+        $pagination = $paginator->paginate(
+            $qb->getQuery(),
+            $page,
+            $limit
+        );
+
+        return $pagination;
     }
 
     /**
