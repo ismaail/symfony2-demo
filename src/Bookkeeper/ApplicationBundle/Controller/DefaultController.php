@@ -15,11 +15,13 @@ use Bookkeeper\ApplicationBundle\Form\BookType;
 class DefaultController extends Controller
 {
     /**
+     * @param Request $request
+     *
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function indexAction()
+    public function indexAction(Request $request)
     {
-        $books = $this->getBooks();
+        $books = $this->getBooks($request->query->get('page', 1), 10);
 
         return $this->render('BookkeeperApplicationBundle:Default:index.html.twig', array(
             'books' => $books,
