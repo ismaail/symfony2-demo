@@ -59,6 +59,20 @@ class DefaultController extends Controller
     }
 
     /**
+     * Get all books
+     *
+     * @return \Bookkeeper\ApplicationBundle\Entity\Book[]
+     */
+    protected function getBooks()
+    {
+        $qb = $this->getDoctrine()->getEntityManager()->createQueryBuilder();
+        $qb->select('b')
+           ->from('Bookkeeper\ApplicationBundle\Entity\Book', 'b');
+
+        return $qb->getQuery()->getResult();
+    }
+
+    /**
      * Create Book form
      *
      * @param Book $book
