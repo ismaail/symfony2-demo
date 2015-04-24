@@ -16,6 +16,8 @@ use Doctrine\ORM\NoResultException;
 class DefaultController extends Controller
 {
     /**
+     * List all books
+     *
      * @param Request $request
      *
      * @return \Symfony\Component\HttpFoundation\Response
@@ -53,6 +55,8 @@ class DefaultController extends Controller
     }
 
     /**
+     * Add new book action
+     *
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function newAction()
@@ -65,6 +69,8 @@ class DefaultController extends Controller
     }
 
     /**
+     * Create new book action
+     *
      * @param Request $request
      *
      * @return \Symfony\Component\HttpFoundation\Response
