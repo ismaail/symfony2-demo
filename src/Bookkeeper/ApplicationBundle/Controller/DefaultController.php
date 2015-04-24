@@ -7,6 +7,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Bookkeeper\ApplicationBundle\Exception\ApplicationException;
 use Bookkeeper\ApplicationBundle\Entity\Book;
 use Bookkeeper\ApplicationBundle\Form\BookType;
+use Doctrine\ORM\NoResultException;
 
 /**
  * Class DefaultController
@@ -28,6 +29,27 @@ class DefaultController extends Controller
         return $this->render('BookkeeperApplicationBundle:Default:index.html.twig', array(
             'books' => $books,
         ));
+    }
+
+    /**
+     * Show book details
+     *
+     * @param string $slug
+     *
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function showAction($slug)
+    {
+        try {
+            $book = $this->getBookBySlug($slug);
+
+            return $this->render('BookkeeperApplicationBundle:Default:show.html.twig', array(
+                'book' => $book,
+            ));
+
+        } catch (NoResultException $e) {
+            throw $this->createNotFoundException("Book not found");
+        }
     }
 
     /**
@@ -94,6 +116,26 @@ class DefaultController extends Controller
         );
 
         return $pagination;
+    }
+
+    /**
+     * Get single book by slug
+     *
+     * @param string $slug
+     *
+     * @return \Bookkeeper\ApplicationBundle\Entity\Book
+     */
+    protected function getBookBySlug($slug)
+    {
+        /** @var \Doctrine\ORM\EntityManager $em */
+        $em = $this->get('doctrine.orm.entity_manager');
+        $qb = $em->createQueryBuilder();
+        $qb->select('b')
+           ->from('BookkeeperApplicationBundle:Book', 'b')
+           ->where('b.slug = :slug')
+           ->setParameter('slug', $slug);
+
+        return $qb->getQuery()->getSingleResult();
     }
 
     /**
