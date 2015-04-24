@@ -2,6 +2,10 @@ home:
     path:     /
     defaults: { _controller: BookkeeperApplicationBundle:Default:index }
 
+book_show:
+    path:     /show/{slug}
+    defaults: { _controller: "BookkeeperApplicationBundle:Default:show" }
+
 book_new:
     path:     /new
     defaults: { _controller: BookkeeperApplicationBundle:Default:new }
