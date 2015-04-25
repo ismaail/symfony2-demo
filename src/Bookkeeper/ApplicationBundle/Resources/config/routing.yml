@@ -5,6 +5,8 @@ home:
 book_show:
     path:     /show/{slug}
     defaults: { _controller: "BookkeeperApplicationBundle:Default:show" }
+    requirements:
+        slug: "[a-z-]+"
 
 book_new:
     path:     /new
