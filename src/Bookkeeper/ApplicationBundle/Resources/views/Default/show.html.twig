@@ -5,4 +5,5 @@
     <h1>{{ book.title }}</h1>
     <p>Number of pages: {{ book.pages }}</p>
     <p>{{ book.description }}</p>
+    <p><a href="{{ path('book_edit', {'slug': book.slug}) }}">Edit</a></p>
 {% endblock %}
