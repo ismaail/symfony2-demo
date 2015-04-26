@@ -97,6 +97,63 @@ class DefaultController extends Controller
     }
 
     /**
+     * Edit book
+     *
+     * @param string $slug
+     *
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function editAction($slug)
+    {
+        try {
+            $book = $this->getBookBySlug($slug);
+            $form = $this->createBookTypeForm($book, false);
+
+            return $this->render('BookkeeperApplicationBundle:Default:edit.html.twig', array(
+                'form' => $form->createView(),
+                'book' => $book,
+            ));
+
+        } catch (NoResultException $e) {
+            throw $this->createNotFoundException("Book not found");
+        }
+    }
+
+    /**
+     * @param Request $request
+     * @param string $slug
+     *
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function updateAction(Request $request, $slug)
+    {
+        try {
+            $book = $this->getBookBySlug($slug);
+            $form = $this->createBookTypeForm($book, false);
+
+            $form->handleRequest($request);
+
+            if ($form->isValid()) {
+                $em = $this->getDoctrine()->getManager();
+                $em->flush();
+
+                $this->get('session')->getFlashBag()->add('success', 'Book has been created.');
+                return $this->redirect($this->generateUrl('book_show', array('slug' => $book->getSlug())));
+            }
+
+            $this->get('session')->getFlashBag()->add('error', 'Error updating the book');
+
+            return $this->render('BookkeeperApplicationBundle:Default:edit.html.twig', array(
+                'form' => $form->createView(),
+                'book' => $book,
+            ));
+
+        } catch (NoResultException $e) {
+            throw $this->createNotFoundException("Book not found");
+        }
+    }
+
+    /**
      * Get all books using pagination
      *
      * @param int $page
@@ -154,12 +211,21 @@ class DefaultController extends Controller
      */
     protected function createBookTypeForm(Book $book, $isCreationForm = true)
     {
+        $formOptions = array(
+            'action'  => $isCreationForm
+                         ? array('url' => 'book_create', 'params' => array())
+                         : array('url' => 'book_update', 'params' => array('slug' => $book->getSlug())
+            ),
+            'method'  => $isCreationForm ? 'POST'   : 'PUT',
+            'label'   => $isCreationForm ? 'Create' : 'Update',
+        );
+
         $form = $this->createForm(new BookType(), $book, array(
-            'action' => $this->generateUrl('book_create'),
-            'method' => 'POST',
+            'action' => $this->generateUrl($formOptions['action']['url'], $formOptions['action']['params']),
+            'method' => $formOptions['method'],
         ));
 
-        $form->add('submit', 'submit', array('label' => $isCreationForm ? 'Create' : 'Update'));
+        $form->add('submit', 'submit', array('label' => $formOptions['label']));
 
         return $form;
     }

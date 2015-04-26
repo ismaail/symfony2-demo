@@ -5,8 +5,7 @@ home:
 book_show:
     path:     /show/{slug}
     defaults: { _controller: "BookkeeperApplicationBundle:Default:show" }
-    requirements:
-        slug: "[a-z-]+"
+    requirements: { slug: "[a-z-]+" }
 
 book_new:
     path:     /new
@@ -16,3 +15,13 @@ book_create:
     path: /create
     defaults: { _controller: "BookkeeperApplicationBundle:Default:create" }
     requirements: { _method: post }
+
+book_edit:
+    path: /edit/{slug}
+    defaults: { _controller: "BookkeeperApplicationBundle:Default:edit" }
+    requirements: { slug: "[a-z-]+" }
+
+book_update:
+    path: /update/{slug}
+    defaults: { _controller: "BookkeeperApplicationBundle:Default:update" }
+    requirements: { slug: "[a-z-]+", _method: put}
