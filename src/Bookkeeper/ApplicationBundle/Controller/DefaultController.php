@@ -154,12 +154,21 @@ class DefaultController extends Controller
      */
     protected function createBookTypeForm(Book $book, $isCreationForm = true)
     {
+        $formOptions = array(
+            'action'  => $isCreationForm
+                         ? array('url' => 'book_create', 'params' => array())
+                         : array('url' => 'book_update', 'params' => array('slug' => $book->getSlug())
+            ),
+            'method'  => $isCreationForm ? 'POST'   : 'PUT',
+            'label'   => $isCreationForm ? 'Create' : 'Update',
+        );
+
         $form = $this->createForm(new BookType(), $book, array(
-            'action' => $this->generateUrl('book_create'),
-            'method' => 'POST',
+            'action' => $this->generateUrl($formOptions['action']['url'], $formOptions['action']['params']),
+            'method' => $formOptions['method'],
         ));
 
-        $form->add('submit', 'submit', array('label' => $isCreationForm ? 'Create' : 'Update'));
+        $form->add('submit', 'submit', array('label' => $formOptions['label']));
 
         return $form;
     }
