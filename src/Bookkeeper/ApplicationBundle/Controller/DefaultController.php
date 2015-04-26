@@ -111,6 +111,7 @@ class DefaultController extends Controller
 
             return $this->render('BookkeeperApplicationBundle:Default:edit.html.twig', array(
                 'form' => $form->createView(),
+                'book' => $book,
             ));
 
         } catch (NoResultException $e) {
@@ -144,6 +145,7 @@ class DefaultController extends Controller
 
             return $this->render('BookkeeperApplicationBundle:Default:edit.html.twig', array(
                 'form' => $form->createView(),
+                'book' => $book,
             ));
 
         } catch (NoResultException $e) {

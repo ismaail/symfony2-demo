@@ -1,8 +1,8 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Edit Book{% endblock %}
+{% block title %}Edit Book - {{ book.title }}{% endblock %}
 
 {% block body %}
-    <h2>Edit Book</h2>
+    <h2>Edit Book - {{ book.title }}</h2>
     {% include('BookkeeperApplicationBundle:Default:book.html.twig') %}
 {%  endblock %}
