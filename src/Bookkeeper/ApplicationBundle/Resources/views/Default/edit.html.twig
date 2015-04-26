@@ -3,6 +3,7 @@
 {% block title %}Edit Book - {{ book.title }}{% endblock %}
 
 {% block body %}
-    <h2>Edit Book - {{ book.title }}</h2>
+    <h2>Edit Book</h2>
+    <h4>{{ book.title }}</h4>
     {% include('BookkeeperApplicationBundle:Default:book.html.twig') %}
 {%  endblock %}
