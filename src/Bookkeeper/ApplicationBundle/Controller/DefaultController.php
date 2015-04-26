@@ -97,6 +97,61 @@ class DefaultController extends Controller
     }
 
     /**
+     * Edit book
+     *
+     * @param string $slug
+     *
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function editAction($slug)
+    {
+        try {
+            $book = $this->getBookBySlug($slug);
+            $form = $this->createBookTypeForm($book, false);
+
+            return $this->render('BookkeeperApplicationBundle:Default:edit.html.twig', array(
+                'form' => $form->createView(),
+            ));
+
+        } catch (NoResultException $e) {
+            throw $this->createNotFoundException("Book not found");
+        }
+    }
+
+    /**
+     * @param Request $request
+     * @param string $slug
+     *
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function updateAction(Request $request, $slug)
+    {
+        try {
+            $book = $this->getBookBySlug($slug);
+            $form = $this->createBookTypeForm($book, false);
+
+            $form->handleRequest($request);
+
+            if ($form->isValid()) {
+                $em = $this->getDoctrine()->getManager();
+                $em->flush();
+
+                $this->get('session')->getFlashBag()->add('success', 'Book has been created.');
+                return $this->redirect($this->generateUrl('book_show', array('slug' => $book->getSlug())));
+            }
+
+            $this->get('session')->getFlashBag()->add('error', 'Error updating the book');
+
+            return $this->render('BookkeeperApplicationBundle:Default:edit.html.twig', array(
+                'form' => $form->createView(),
+            ));
+
+        } catch (NoResultException $e) {
+            throw $this->createNotFoundException("Book not found");
+        }
+    }
+
+    /**
      * Get all books using pagination
      *
      * @param int $page
