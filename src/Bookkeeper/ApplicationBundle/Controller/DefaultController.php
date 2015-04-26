@@ -16,6 +16,11 @@ use Doctrine\ORM\NoResultException;
 class DefaultController extends Controller
 {
     /**
+     * @var \Bookkeeper\ApplicationBundle\Model\BookModel
+     */
+    protected $bookModel;
+
+    /**
      * List all books
      *
      * @param Request $request
@@ -26,7 +31,7 @@ class DefaultController extends Controller
     {
         $booksParams = $this->container->getParameter('books');
 
-        $books = $this->getBooks($request->query->get('page', 1), $booksParams['pagination']['limit']);
+        $books = $this->getBookModel()->getBooks($request->query->get('page', 1), $booksParams['pagination']['limit']);
 
         return $this->render('BookkeeperApplicationBundle:Default:index.html.twig', array(
             'books' => $books,
@@ -43,7 +48,7 @@ class DefaultController extends Controller
     public function showAction($slug)
     {
         try {
-            $book = $this->getBookBySlug($slug);
+            $book = $this->getBookModel()->getBookBySlug($slug);
 
             return $this->render('BookkeeperApplicationBundle:Default:show.html.twig', array(
                 'book' => $book,
@@ -83,7 +88,7 @@ class DefaultController extends Controller
         $form->handleRequest($request);
 
         if ($form->isValid()) {
-            $this->createNewBook($book);
+            $this->getBookModel()->createNewBook($book);
             $this->get('session')->getFlashBag()->add('success', 'Book has been created.');
 
             return $this->redirect($this->generateUrl('home'), 201);
@@ -106,7 +111,7 @@ class DefaultController extends Controller
     public function editAction($slug)
     {
         try {
-            $book = $this->getBookBySlug($slug);
+            $book = $this->getBookModel()->getBookBySlug($slug);
             $form = $this->createBookTypeForm($book, false);
 
             return $this->render('BookkeeperApplicationBundle:Default:edit.html.twig', array(
@@ -128,7 +133,7 @@ class DefaultController extends Controller
     public function updateAction(Request $request, $slug)
     {
         try {
-            $book = $this->getBookBySlug($slug);
+            $book = $this->getBookModel()->getBookBySlug($slug);
             $form = $this->createBookTypeForm($book, false);
 
             $form->handleRequest($request);
@@ -151,54 +156,6 @@ class DefaultController extends Controller
         } catch (NoResultException $e) {
             throw $this->createNotFoundException("Book not found");
         }
-    }
-
-    /**
-     * Get all books using pagination
-     *
-     * @param int $page
-     * @param int $limit
-     *
-     * @return \Bookkeeper\ApplicationBundle\Entity\Book[]
-     */
-    protected function getBooks($page, $limit)
-    {
-        /** @var \Doctrine\ORM\EntityManager $em */
-        $em = $this->get('doctrine.orm.entity_manager');
-        $qb = $em->createQueryBuilder();
-        $qb->select('b')
-           ->from('BookkeeperApplicationBundle:Book', 'b')
-           ->orderBy('b.id', 'asc');
-
-        /** @var \Knp\Component\Pager\Paginator $paginator */
-        $paginator  = $this->get('knp_paginator');
-        $pagination = $paginator->paginate(
-            $qb->getQuery(),
-            $page,
-            $limit
-        );
-
-        return $pagination;
-    }
-
-    /**
-     * Get single book by slug
-     *
-     * @param string $slug
-     *
-     * @return \Bookkeeper\ApplicationBundle\Entity\Book
-     */
-    protected function getBookBySlug($slug)
-    {
-        /** @var \Doctrine\ORM\EntityManager $em */
-        $em = $this->get('doctrine.orm.entity_manager');
-        $qb = $em->createQueryBuilder();
-        $qb->select('b')
-           ->from('BookkeeperApplicationBundle:Book', 'b')
-           ->where('b.slug = :slug')
-           ->setParameter('slug', $slug);
-
-        return $qb->getQuery()->getSingleResult();
     }
 
     /**
@@ -228,18 +185,6 @@ class DefaultController extends Controller
         $form->add('submit', 'submit', array('label' => $formOptions['label']));
 
         return $form;
-    }
-
-    /**
-     * Create new Book in database
-     *
-     * @param Book $book
-     */
-    protected function createNewBook(Book $book)
-    {
-        $em = $this->getDoctrine()->getManager();
-        $em->persist($book);
-        $em->flush();
     }
 
     /**
@@ -273,5 +218,19 @@ class DefaultController extends Controller
                 ->setBody($body, 'text/html');
 
         $mailer->send($message);
+    }
+
+    /**
+     * Get book model
+     *
+     * @return \Bookkeeper\ApplicationBundle\Model\BookModel $bookModel
+     */
+    protected function getBookModel()
+    {
+        if (! $this->bookModel) {
+            $this->bookModel = $this->get('book_model');
+        }
+
+        return $this->bookModel;
     }
 }
