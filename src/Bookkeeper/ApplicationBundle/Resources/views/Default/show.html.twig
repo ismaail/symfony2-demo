@@ -5,5 +5,12 @@
     <h1>{{ book.title }}</h1>
     <p>Number of pages: {{ book.pages }}</p>
     <p>{{ book.description }}</p>
-    <p><a href="{{ path('book_edit', {'slug': book.slug}) }}">Edit</a></p>
+    <div class="col-sm-4 col-md-2">
+        <a href="{{ path('book_edit', {'slug': book.slug}) }}" class="button-link">
+            <button class="input-sm form-control">Edit</button>
+        </a>
+    </div>
+    {{ form_start(form) }}<div class="col-sm-4 col-md-2">
+        {{ form_widget(form.submit, {attr: {class: 'input-sm form-control'}}) }}
+    </div>{{ form_end(form) }}
 {% endblock %}
