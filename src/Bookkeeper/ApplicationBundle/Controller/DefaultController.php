@@ -21,7 +21,7 @@ class DefaultController extends Controller
     protected $bookModel;
 
     /**
-     * List all books
+     * List all books action
      *
      * @param Request $request
      *
@@ -39,7 +39,7 @@ class DefaultController extends Controller
     }
 
     /**
-     * Show book details
+     * Show book details action
      *
      * @param string $slug
      *
@@ -60,6 +60,8 @@ class DefaultController extends Controller
     }
 
     /**
+     * New book action
+     *
      * Add new book action
      *
      * @return \Symfony\Component\HttpFoundation\Response
@@ -102,7 +104,7 @@ class DefaultController extends Controller
     }
 
     /**
-     * Edit book
+     * Edit book action
      *
      * @param string $slug
      *
@@ -125,6 +127,8 @@ class DefaultController extends Controller
     }
 
     /**
+     * Update book action
+     *
      * @param Request $request
      * @param string $slug
      *
@@ -222,7 +226,7 @@ class DefaultController extends Controller
     /**
      * Get book model
      *
-     * @return \Bookkeeper\ApplicationBundle\Model\BookModel $bookModel
+     * @return \Bookkeeper\ApplicationBundle\Model\BookModel
      */
     protected function getBookModel()
     {
