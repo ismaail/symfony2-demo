@@ -86,6 +86,17 @@ class BookModel
     }
 
     /**
+     * Remove book record
+     *
+     * @param Book $book
+     */
+    public function remove(Book $book)
+    {
+        $this->getEntityManager()->remove($book);
+        $this->getEntityManager()->flush();
+    }
+
+    /**
      * Get Doctrine entity manager
      *
      * @return \Doctrine\ORM\EntityManager

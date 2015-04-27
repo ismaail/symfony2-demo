@@ -25,3 +25,9 @@ book_update:
     path: /update/{slug}
     defaults: { _controller: "BookkeeperApplicationBundle:Default:update" }
     requirements: { slug: "[a-z-]+", _method: put}
+
+book_delete:
+    path: /delete/{slug}
+    defaults: { _controller: "BookkeeperApplicationBundle:Default:delete" }
+    requirements: { _method: delete, slug: "[a-z-]+" }
+

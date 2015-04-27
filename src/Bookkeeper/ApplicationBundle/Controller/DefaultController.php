@@ -21,7 +21,7 @@ class DefaultController extends Controller
     protected $bookModel;
 
     /**
-     * List all books
+     * List all books action
      *
      * @param Request $request
      *
@@ -39,7 +39,7 @@ class DefaultController extends Controller
     }
 
     /**
-     * Show book details
+     * Show book details action
      *
      * @param string $slug
      *
@@ -52,6 +52,7 @@ class DefaultController extends Controller
 
             return $this->render('BookkeeperApplicationBundle:Default:show.html.twig', array(
                 'book' => $book,
+                'form' => $this->createBookDeleteForm($book)->createView(),
             ));
 
         } catch (NoResultException $e) {
@@ -60,6 +61,8 @@ class DefaultController extends Controller
     }
 
     /**
+     * New book action
+     *
      * Add new book action
      *
      * @return \Symfony\Component\HttpFoundation\Response
@@ -102,7 +105,7 @@ class DefaultController extends Controller
     }
 
     /**
-     * Edit book
+     * Edit book action
      *
      * @param string $slug
      *
@@ -125,6 +128,8 @@ class DefaultController extends Controller
     }
 
     /**
+     * Update book action
+     *
      * @param Request $request
      * @param string $slug
      *
@@ -159,6 +164,35 @@ class DefaultController extends Controller
     }
 
     /**
+     * @param Request $request
+     * @param string $slug
+     *
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function deleteAction(Request $request, $slug)
+    {
+        try {
+            $book = $this->getBookModel()->getBookBySlug($slug);
+            $form = $this->createBookDeleteForm($book);
+
+            $form->handleRequest($request);
+
+            if ($form->isValid()) {
+                $this->getBookModel()->remove($book);
+
+                $this->get('session')->getFlashBag()->add('success', 'Book has been deleted.');
+                return $this->redirect($this->generateUrl('home'));
+            }
+
+            $this->get('session')->getFlashBag()->add('error', 'Error deleting the book');
+            return $this->redirect($this->generateUrl('book_show', array('slug' => $book->getSlug())));
+
+        } catch (NoResultException $e) {
+            throw $this->createNotFoundException("Book not found");
+        }
+    }
+
+    /**
      * Create Book form
      *
      * @param Book $book
@@ -182,6 +216,22 @@ class DefaultController extends Controller
         ));
 
         $form->add('submit', 'submit', array('label' => $formOptions['label']));
+
+        return $form;
+    }
+
+    /**
+     * @param Book $book
+     *
+     * @return \Symfony\Component\Form\Form
+     */
+    protected function createBookDeleteForm(Book $book)
+    {
+        $form = $this->createFormBuilder()
+            ->setAction($this->generateUrl('book_delete', array('slug' => $book->getSlug())))
+            ->setMethod('delete')
+            ->add('submit', 'submit', array('label' => 'Delete'))
+            ->getForm();
 
         return $form;
     }
@@ -222,7 +272,7 @@ class DefaultController extends Controller
     /**
      * Get book model
      *
-     * @return \Bookkeeper\ApplicationBundle\Model\BookModel $bookModel
+     * @return \Bookkeeper\ApplicationBundle\Model\BookModel
      */
     protected function getBookModel()
     {
