@@ -11,9 +11,30 @@ use Bookkeeper\ApplicationBundle\Controller\DefaultController;
  */
 class DefaultControllerTest extends WebTestCase
 {
+    /**
+     * @param \Knp\Component\Pager\Paginator $paginator
+     *
+     * @return \PHPUnit_Framework_MockObject_MockObject
+     */
+    public function mockBookModel($paginator)
+    {
+        $model = $this->getMockBuilder('Bookkeeper\ApplicationBundle\Model\BooModel')
+                      ->setMethods(array('getBooks'))
+                      ->disableOriginalConstructor()
+                      ->getMock();
+
+        $model->expects($this->once())
+              ->method('getBooks')
+              ->with(1, 20)
+              ->will($this->returnValue($paginator->paginate(array(), 1, 20)));
+
+        return $model;
+    }
+
     public function testIndex()
     {
         $client = static::createClient();
+        $client->getContainer()->set('book_model', $this->mockBookModel($client->getContainer()->get('knp_paginator')));
 
         $client->request('GET', '/');
 
