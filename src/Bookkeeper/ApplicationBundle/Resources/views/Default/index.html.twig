@@ -8,8 +8,13 @@
     <table class="table">
         <thead>
             <tr>
+            {% if books is empty %}
+                <th>id</th>
+                <th>Title</th>
+            {%  else %}
                 <th>{{ knp_pagination_sortable(books, 'Id', 'b.id') }}</th>
                 <th{% if books.isSorted('b.Title') %} class="sorted"{% endif %}>{{ knp_pagination_sortable(books, 'Title', 'b.title') }}</th>
+            {% endif %}
                 <th>Description</th>
                 <th>Pages</th>
             </tr>
