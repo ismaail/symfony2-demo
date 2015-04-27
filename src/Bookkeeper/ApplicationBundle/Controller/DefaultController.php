@@ -171,8 +171,7 @@ class DefaultController extends Controller
         $formOptions = array(
             'action'  => $isCreationForm
                          ? array('url' => 'book_create', 'params' => array())
-                         : array('url' => 'book_update', 'params' => array('slug' => $book->getSlug())
-            ),
+                         : array('url' => 'book_update', 'params' => array('slug' => $book->getSlug())),
             'method'  => $isCreationForm ? 'POST'   : 'PUT',
             'label'   => $isCreationForm ? 'Create' : 'Update',
         );
