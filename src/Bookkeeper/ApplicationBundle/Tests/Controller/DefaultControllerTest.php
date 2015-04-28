@@ -4,6 +4,7 @@ namespace Bookkeeper\ApplicationBundle\Tests\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Bookkeeper\ApplicationBundle\Controller\DefaultController;
+use Bookkeeper\ApplicationBundle\Entity\Book as EntityBook;
 
 /**
  * Class DefaultControllerTest
@@ -12,35 +13,78 @@ use Bookkeeper\ApplicationBundle\Controller\DefaultController;
 class DefaultControllerTest extends WebTestCase
 {
     /**
-     * @param \Knp\Component\Pager\Paginator $paginator
-     *
-     * @return \PHPUnit_Framework_MockObject_MockObject
+     * @var \Symfony\Bundle\FrameworkBundle\Client
      */
-    public function mockBookModel($paginator)
+    public $client;
+
+    public function setUp()
     {
-        $model = $this->getMockBuilder('Bookkeeper\ApplicationBundle\Model\BooModel')
-                      ->setMethods(array('getBooks'))
-                      ->disableOriginalConstructor()
-                      ->getMock();
-
-        $model->expects($this->once())
-              ->method('getBooks')
-              ->with(1, 20)
-              ->will($this->returnValue($paginator->paginate(array(), 1, 20)));
-
-        return $model;
+        $this->client = static::createClient();
     }
 
-    public function testIndex()
+    /**
+     * @return \PHPUnit_Framework_MockObject_MockObject
+     */
+    public function getBookModelMock()
     {
-        $client = static::createClient();
-        $client->getContainer()->set('book_model', $this->mockBookModel($client->getContainer()->get('knp_paginator')));
+        return $this->getMockBuilder('Bookkeeper\ApplicationBundle\Model\BooModel')
+                    ->setMethods(array('getBooks', 'getBookBySlug'))
+                    ->disableOriginalConstructor()
+                    ->getMock();
+    }
 
-        $client->request('GET', '/');
+    public function testIndexAction()
+    {
+        // Mock BookModel
+        $bookModelMock = $this->getBookModelMock();
 
-        $this->assertTrue($client->getResponse()->isSuccessful(), 'Request to "/" was not successful');
+        /** @var \Knp\Component\Pager\Paginator $paginator $paginator */
+        $paginator = $this->client->getContainer()->get('knp_paginator');
 
-        $this->assertEquals('text/html; charset=UTF-8', $client->getResponse()->headers->get('Content-Type'));
+        $bookModelMock->expects($this->once())
+                      ->method('getBooks')
+                      ->with(1, 20)
+                      ->will($this->returnValue($paginator->paginate(array(), 1, 20)));
+
+        $this->client->getContainer()->set('book_model', $bookModelMock);
+
+        // Send the request
+        $this->client->request('GET', '/');
+
+        // Assertions
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Get request to "/" was not successful');
+
+        $this->assertEquals('text/html; charset=UTF-8', $this->client->getResponse()->headers->get('Content-Type'));
+    }
+
+    public function testShowAction()
+    {
+        // Mock BookModel
+        $bookModelMock = $this->getBookModelMock();
+
+        $book                   = new EntityBook();
+        $bookReflectionClass    = new \ReflectionClass($book);
+        $slugReflectionProperty = $bookReflectionClass->getProperty('slug');
+        $slugReflectionProperty->setAccessible(true);
+        $slugReflectionProperty->setValue($book, 'title-book');
+
+        $bookModelMock->expects($this->once())
+                      ->method('getBookBySlug')
+                      ->with('book-title')
+                      ->will($this->returnValue($book));
+
+        $this->client->getContainer()->set('book_model', $bookModelMock);
+
+        // Send the request
+        $this->client->request('GET', '/show/book-title');
+
+        // Assertions
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'GET request to "/show/book-title" was not successful'
+        );
+
+        $this->assertEquals('text/html; charset=UTF-8', $this->client->getResponse()->headers->get('Content-Type'));
     }
 
     /**
