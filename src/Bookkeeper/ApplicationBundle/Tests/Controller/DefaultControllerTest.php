@@ -87,6 +87,24 @@ class DefaultControllerTest extends WebTestCase
         $this->assertEquals('text/html; charset=UTF-8', $this->client->getResponse()->headers->get('Content-Type'));
     }
 
+    public function testShowActionReturns404ErrorIfBookNotFound()
+    {
+        // Mock BookModel
+        $bookModelMock = $this->getBookModelMock();
+
+        $bookModelMock->expects($this->once())
+                      ->method('getBookBySlug')
+                      ->with('no-exists-book')
+                      ->will($this->throwException(new \Doctrine\ORM\NoResultException()));
+
+        $this->client->getContainer()->set('book_model', $bookModelMock);
+
+        // Send the request
+        $this->client->request('GET', '/show/no-exists-book');
+
+        $this->assertTrue($this->client->getResponse()->isNotFound());
+    }
+
     /**
      * @expectedException \Bookkeeper\ApplicationBundle\Exception\ApplicationException
      */
