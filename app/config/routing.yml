@@ -1,4 +1,11 @@
+bookkeeper_manager:
+    resource: "@BookkeeperManagerBundle/Resources/config/routing.yml"
+    prefix:   /
+
+bookkeeper_user:
+    resource: "@BookkeeperUserBundle/Resources/config/routing.yml"
+    prefix:   /
+
 bookkeeper_application:
     resource: "@BookkeeperApplicationBundle/Resources/config/routing.yml"
     prefix:   /
-
