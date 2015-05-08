@@ -18,6 +18,8 @@ class AppKernel extends Kernel
             new Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle(),
             new Knp\Bundle\PaginatorBundle\KnpPaginatorBundle(),
             new Bookkeeper\ApplicationBundle\BookkeeperApplicationBundle(),
+            new Bookkeeper\ManagerBundle\BookkeeperManagerBundle(),
+            new Bookkeeper\UserBundle\BookkeeperUserBundle(),
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {
