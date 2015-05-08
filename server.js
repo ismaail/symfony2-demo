@@ -12,6 +12,8 @@
 	server.watch([
 		__dirname + "/app/Resources/views",
 		__dirname + "/src/Bookkeeper/ApplicationBundle/Resources/views",
+		__dirname + "/src/Bookkeeper/ManagerBundle/Resources/views",
+		__dirname + "/src/Bookkeeper/UserBundle/Resources/views",
 		__dirname + "/web/css",
 		__dirname + "/web/js",
 		__dirname + "/web/images"
