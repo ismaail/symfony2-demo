@@ -4,7 +4,16 @@
 
 {% block body %}
     <h1>Welcome to Bookkeeper!</h1>
-    <h2>Books list:</h2>
+    <div class="row">
+        <div class="col-sm-7 col-md-8"><h2>Books list:</h2></div>
+        {% if is_granted("ROLE_ADMIN") %}
+        <div class="col-xs-12 col-sm-3 col-md-2 pull-right">
+            <a href="{{ path('book_new') }}" class="button-link">
+                <button class="input-sm form-control">Add new book</button>
+            </a>
+        </div>
+        {% endif %}
+    </div>
     <table class="table">
         <thead>
             <tr>
