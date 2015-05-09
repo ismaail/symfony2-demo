@@ -105,11 +105,10 @@ class DefaultControllerTest extends WebTestCase
         $this->assertTrue($this->client->getResponse()->isNotFound());
     }
 
-    /**
-     * @expectedException \Bookkeeper\ApplicationBundle\Exception\ApplicationException
-     */
     public function testEmailSendMessageThrowsExceptionIfSenderParamsNotDefined()
     {
+        $this->setExpectedException('\Bookkeeper\ApplicationBundle\Exception\ApplicationException');
+
         $containerMock = $this->getMockBuilder('appDevDebugProjectContainer')
             ->setMethods(array('getParameter', 'get'))
             ->getMock();
@@ -129,11 +128,10 @@ class DefaultControllerTest extends WebTestCase
         $method->invoke($object, 'subject test', 'message body', 'test@test.com');
     }
 
-    /**
-     * @expectedException \Bookkeeper\ApplicationBundle\Exception\ApplicationException
-     */
     public function testEmailSendMessageThrowsExceptionIfSenderNameParamsNotDefined()
     {
+        $this->setExpectedException('\Bookkeeper\ApplicationBundle\Exception\ApplicationException');
+
         $containerMock = $this->getMockBuilder('appDevDebugProjectContainer')
             ->setMethods(array('getParameter', 'get'))
             ->getMock();
@@ -153,11 +151,10 @@ class DefaultControllerTest extends WebTestCase
         $method->invoke($object, 'subject test', 'message body', 'test@test.com');
     }
 
-    /**
-     * @expectedException \Bookkeeper\ApplicationBundle\Exception\ApplicationException
-     */
     public function testEmailSendMessageThrowsExceptionIfSenderAddressParamsNotDefined()
     {
+        $this->setExpectedException('\Bookkeeper\ApplicationBundle\Exception\ApplicationException');
+
         $containerMock = $this->getMockBuilder('appDevDebugProjectContainer')
             ->setMethods(array('getParameter', 'get'))
             ->getMock();
