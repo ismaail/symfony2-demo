@@ -33,6 +33,17 @@ class BookControllerTest extends WebTestCase
         $this->assertTrue($this->client->getResponse()->isSuccessful());
     }
 
+    public function testNewActionNotAccessibleByAnonymousUser()
+    {
+        $this->client->request('GET', '/new');
+
+        $this->assertTrue($this->client->getResponse() instanceof RedirectResponse);
+        $this->assertFalse($this->client->getResponse()->isSuccessful());
+
+        $this->client->followRedirect();
+        $this->assertStringEndsWith('/login', $this->client->getHistory()->current()->getUri());
+    }
+
     public function testCreateActionIsAccessibleByRoleAdmin()
     {
         $this->logIn();
@@ -40,6 +51,17 @@ class BookControllerTest extends WebTestCase
         $this->client->request('POST', '/create');
 
         $this->assertTrue($this->client->getResponse()->isSuccessful());
+    }
+
+    public function testCreateActionNotAccessibleByAnonymousUser()
+    {
+        $this->client->request('POST', '/create');
+
+        $this->assertTrue($this->client->getResponse() instanceof RedirectResponse);
+        $this->assertFalse($this->client->getResponse()->isSuccessful());
+
+        $this->client->followRedirect();
+        $this->assertStringEndsWith('/login', $this->client->getHistory()->current()->getUri());
     }
 
     public function testEditActionIsAccessibleByRoleAdmin()
@@ -52,6 +74,17 @@ class BookControllerTest extends WebTestCase
         $this->assertTrue($this->client->getResponse()->isSuccessful());
     }
 
+    public function testEditActionNotAccessibleByAnonymousUser()
+    {
+        $this->client->request('GET', '/edit/book-title');
+
+        $this->assertTrue($this->client->getResponse() instanceof RedirectResponse);
+        $this->assertFalse($this->client->getResponse()->isSuccessful());
+
+        $this->client->followRedirect();
+        $this->assertStringEndsWith('/login', $this->client->getHistory()->current()->getUri());
+    }
+
     public function testUpdateActionIsAccessibleByRoleAdmin()
     {
         $this->logIn();
@@ -60,6 +93,17 @@ class BookControllerTest extends WebTestCase
         $this->client->request('PUT', '/update/book-title');
 
         $this->assertTrue($this->client->getResponse()->isSuccessful());
+    }
+
+    public function testUpdateActionNotAccessibleByAnonymousUser()
+    {
+        $this->client->request('PUT', '/update/book-title');
+
+        $this->assertTrue($this->client->getResponse() instanceof RedirectResponse);
+        $this->assertFalse($this->client->getResponse()->isSuccessful());
+
+        $this->client->followRedirect();
+        $this->assertStringEndsWith('/login', $this->client->getHistory()->current()->getUri());
     }
 
     public function testDeleteActionIsAccessibleByRoleAdmin()
@@ -73,15 +117,15 @@ class BookControllerTest extends WebTestCase
         $this->assertTrue($this->client->getResponse() instanceof RedirectResponse);
     }
 
-    public function testDeleteActionRedirectAfterFailedRequest()
+    public function testDeleteActionNotAccessibleByAnonymousUser()
     {
-        $this->logIn();
-        $this->mockBookModelGetBookBySlug('book-title');
+        $this->client->request('DELETE', '/delete/book-title');
 
-        $this->client->followRedirects();
-        $this->client->request('DELETE', 'delete/book-title');
+        $this->assertTrue($this->client->getResponse() instanceof RedirectResponse);
+        $this->assertFalse($this->client->getResponse()->isSuccessful());
 
-        $this->assertStringEndsWith('/show/book-title', $this->client->getHistory()->current()->getUri());
+        $this->client->followRedirect();
+        $this->assertStringEndsWith('/login', $this->client->getHistory()->current()->getUri());
     }
 
     /**
