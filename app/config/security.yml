@@ -13,7 +13,7 @@ security:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
 
-        default:
+        secured_area:
             anonymous: ~
             http_basic: ~
             form_login:
@@ -24,7 +24,6 @@ security:
                 target: /login
 
     access_control:
-        # require ROLE_ADMIN for /admin
         - { path: ^/new, roles: ROLE_ADMIN }
         - { path: ^/create, roles: ROLE_ADMIN }
         - { path: ^/edit, roles: ROLE_ADMIN }
