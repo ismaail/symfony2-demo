@@ -10,11 +10,17 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
  */
 class DefaultControllerTest extends WebTestCase
 {
-    public function testIndex()
+    public function testLoginAction()
     {
-        $this->markTestSkipped();
         $client = static::createClient();
 
         $client->request('GET', '/login');
+    }
+
+    public function testLogoutAction()
+    {
+        $client = static::createClient();
+
+        $client->request('GET', '/logout');
     }
 }
