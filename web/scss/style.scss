@@ -1,0 +1,35 @@
+.main-header {
+	background-color: #282828;
+	color: #ffffee;
+
+	.logo {
+		a {
+			color: rgba(255,255,255,0.8);
+			&:hover {
+				text-decoration: none;
+			}
+		}
+		h1 {
+			margin: 0;
+			padding: 6px 0 4px 6px;
+			font-size: 1.8em;
+			font-weight: bold;
+			text-shadow: 1px 1px 6px #ccc;
+		}
+	}
+
+	.user-box {
+		margin-top: 10px;
+		padding-right: 0;
+		text-align: right;
+		span {
+			text-transform: capitalize;
+		}
+		a {
+			&:hover {
+				color: #ffffee;
+				text-decoration: none;
+			}
+		}
+	}
+}

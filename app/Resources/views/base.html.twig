@@ -7,8 +7,19 @@
         <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
         <link rel="stylesheet" href="{{ asset('lib/bootstrap-css/css/bootstrap.min.css') }}"/>
         <link rel="stylesheet" href="{{ asset('css/common.css') }}"/>
+        <link rel="stylesheet" href="{{ asset('css/style.css') }}"/>
     </head>
     <body>
+        <header class="main-header container-fluid">
+            <div class="logo col-sm-8"><a href="/"><h1>Book Keeper</h1></a></div>
+            <div class="user-box col-sm-4 pull-right">
+            {% if is_granted("ROLE_ADMIN") %}
+                <span>{{ app.user.username }}</span> | <a href="/logout">Logout</a>
+            {% else %}
+                <a href="/login">Login</a>
+            {% endif %}
+            </div>
+        </header>
         <div class="container">
             {% for flashMessage in app.session.flashbag.get('error') %}
                 <div class="alert col-xs-12 alert-danger">{{ flashMessage }}</div>
