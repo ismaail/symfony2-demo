@@ -51,9 +51,9 @@ class BookController extends Controller
 
         if ($form->isValid()) {
             $this->getBookModel()->createNewBook($book);
-            $this->get('session')->getFlashBag()->add('success', 'Book has been created.');
 
-            return $this->redirect($this->generateUrl('home'), 201);
+            $this->get('session')->getFlashBag()->add('success', 'Book has been created.');
+            return $this->redirectToRoute('book_show', array('slug' => $book->getSlug()));
         }
 
         $this->get('session')->getFlashBag()->add('error', 'Error creating a new book');
@@ -107,7 +107,7 @@ class BookController extends Controller
                 $em->flush();
 
                 $this->get('session')->getFlashBag()->add('success', 'Book has been created.');
-                return $this->redirect($this->generateUrl('book_show', array('slug' => $book->getSlug())));
+                return $this->redirectToRoute('book_show', array('slug' => $book->getSlug()));
             }
 
             $this->get('session')->getFlashBag()->add('error', 'Error updating the book');
@@ -140,11 +140,11 @@ class BookController extends Controller
                 $this->getBookModel()->remove($book);
 
                 $this->get('session')->getFlashBag()->add('success', 'Book has been deleted.');
-                return $this->redirect($this->generateUrl('home'));
+                return $this->redirectToRoute('home');
             }
 
             $this->get('session')->getFlashBag()->add('error', 'Error deleting the book');
-            return $this->redirect($this->generateUrl('book_show', array('slug' => $book->getSlug())));
+            return $this->redirectToRoute('book_show', array('slug' => $book->getSlug()));
 
         } catch (NoResultException $e) {
             throw $this->createNotFoundException("Book not found");
