@@ -17,6 +17,10 @@ class DefaultController extends Controller
      */
     public function loginAction()
     {
+        if ($this->isLoggedIn()) {
+            return $this->redirectToRoute('home');
+        }
+
         /** @var \Symfony\Component\Security\Http\Authentication\AuthenticationUtils $authenticationUtils */
         $authenticationUtils = $this->get('security.authentication_utils');
 
@@ -39,5 +43,15 @@ class DefaultController extends Controller
      */
     public function loginCheckAction()
     {
+    }
+
+    /**
+     * Check if user is authenticated
+     *
+     * @return bool
+     */
+    private function isLoggedIn()
+    {
+        return $this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY');
     }
 }
