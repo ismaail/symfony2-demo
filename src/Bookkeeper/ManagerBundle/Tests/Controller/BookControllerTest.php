@@ -7,6 +7,7 @@ use Symfony\Component\BrowserKit\Cookie;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use Bookkeeper\ApplicationBundle\Entity\Book as EntityBook;
+use Bookkeeper\ApplicationBundle\Entity\User as EntityUser;
 
 /**
  * Class BookControllerTest
@@ -128,16 +129,61 @@ class BookControllerTest extends WebTestCase
         $this->assertStringEndsWith('/login', $this->client->getHistory()->current()->getUri());
     }
 
+    public function mockBookkeeperEntityUser()
+    {
+        $mockUser = $this
+            ->getMockBuilder('\Bookkeeper\ApplicationBundle\Entity\User')
+            ->disableOriginalConstructor()
+            ->setMethods(array('serialize'))
+            ->getMock();
+
+        $mockUser
+            ->expects($this->atLeastOnce())
+            ->method('serialize')
+            ->will($this->returnValue('a:3:{i:0;i:1;i:1;s:5:"admin";i:2;s:10:"ROLE_ADMIN";}'));
+
+        $reflectionClass = new \ReflectionClass('\Bookkeeper\ApplicationBundle\Entity\User');
+        $reflectionIdProperty = $reflectionClass->getProperty('id');
+        $reflectionIdProperty->setAccessible(true);
+        $reflectionIdProperty->setValue($mockUser, 1);
+        $reflectionUsernameProperty = $reflectionClass->getProperty('username');
+        $reflectionUsernameProperty->setAccessible(true);
+        $reflectionUsernameProperty->setValue($mockUser, 'admin');
+        $reflectionRolesProperty = $reflectionClass->getProperty('roles');
+        $reflectionRolesProperty->setAccessible(true);
+        $reflectionRolesProperty->setValue($mockUser, EntityUser::ROLE_ADMIN);
+
+        return $mockUser;
+    }
+
+    public function mockEntityUserProvider($mockUser)
+    {
+        $mockEntityUserProvider = $this
+            ->getMockBuilder('\Symfony\Bridge\Doctrine\Security\User\EntityUserProvider')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $mockEntityUserProvider
+            ->expects($this->any())
+            ->method('refreshUser')
+            ->will($this->returnValue($mockUser));
+
+        $this->client->getContainer()->set('security.user.provider.concrete.administrators', $mockEntityUserProvider);
+    }
+
     /**
      * Mock loggedIn user with role "ROLE_ADMIN"
      */
     private function logIn()
     {
+        $user = $this->mockBookkeeperEntityUser();
+        $this->mockEntityUserProvider($user);
+
         /** @var \Symfony\Component\HttpFoundation\Session\Session $session */
         $session = $this->client->getContainer()->get('session');
 
         $firewall = 'secured_area';
-        $token    = new UsernamePasswordToken('admin', null, $firewall, array('ROLE_ADMIN'));
+        $token    = new UsernamePasswordToken($user, null, $firewall, array(EntityUser::ROLE_ADMIN));
         $session->set('_security_' . $firewall, serialize($token));
         $session->save();
 
