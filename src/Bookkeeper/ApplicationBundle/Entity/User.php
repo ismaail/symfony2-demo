@@ -11,12 +11,12 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  * Class User
  * @package Bookkeeper\ApplicationBundle\Entity
  *
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="Bookkeeper\ApplicationBundle\Entity\UserRepository")
  * @ORM\Table(name="user")
  *
  * @UniqueEntity("username")
  */
-class User implements UserInterface
+class User implements UserInterface, \Serializable
 {
     /**
      * @const string
@@ -171,5 +171,31 @@ class User implements UserInterface
     protected function hash($string)
     {
         return password_hash($string, PASSWORD_BCRYPT);
+    }
+
+    /**
+     * String representation of object
+     *
+     * @return string the string representation of the object or null
+     */
+    public function serialize()
+    {
+        return serialize(array(
+            $this->id,
+            $this->username,
+            $this->roles,
+        ));
+    }
+
+    /**
+     * @param string $serialized
+     */
+    public function unserialize($serialized)
+    {
+        list (
+            $this->id,
+            $this->username,
+            $this->roles,
+        ) = unserialize($serialized);
     }
 }
