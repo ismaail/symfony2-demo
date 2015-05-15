@@ -21,12 +21,35 @@ class BookModel
      */
     protected $entityManager;
 
+    /** @var \Doctrine\Common\Cache\FilesystemCache $cache */
+    protected $cache;
+
+    /**
+     * @var int
+     */
+    protected $cacheTtl;
+
     /**
      * @param Container $container
      */
     public function __construct(Container $container)
     {
         $this->container = $container;
+
+        $this->setCache();
+    }
+
+    /**
+     * Set cache options
+     */
+    protected function setCache()
+    {
+        $params = $this->container->getParameter('cache');
+
+        $this->cache = $this->container->get('cache');
+        $this->cache->setNamespace($params['namespace']);
+
+        $this->cacheTtl = $params['ttl'];
     }
 
     /**
