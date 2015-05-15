@@ -26,3 +26,7 @@ parameters:
     books:
         pagination:
             limit: 20
+
+    cache:
+        namespace: Bookkeeper
+        ttl: 3600

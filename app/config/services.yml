@@ -10,3 +10,6 @@ services:
             - { name: doctrine.event_subscriber, connection: default }
         calls:
             - [ setAnnotationReader, [ @annotation_reader ] ]
+    cache:
+        class: Doctrine\Common\Cache\FilesystemCache
+        arguments: [%kernel.cache_dir%]
