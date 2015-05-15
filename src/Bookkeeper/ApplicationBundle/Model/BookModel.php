@@ -87,13 +87,26 @@ class BookModel
      */
     public function getBookBySlug($slug)
     {
+        $key = sprintf("books_slug_%s", $slug);
+
+        // Get from cache
+        $cachedBook = $this->cache->fetch($key);
+        if (false !== $cachedBook) {
+            return $cachedBook;
+        }
+
         $qb = $this->getEntityManager()->createQueryBuilder();
         $qb->select('b')
             ->from('BookkeeperApplicationBundle:Book', 'b')
             ->where('b.slug = :slug')
             ->setParameter('slug', $slug);
 
-        return $qb->getQuery()->getSingleResult();
+        $book = $qb->getQuery()->getSingleResult();
+
+        // Save to cache
+        $this->cache->save($key, $book, $this->cacheTtl);
+
+        return $book;
     }
 
     /**
