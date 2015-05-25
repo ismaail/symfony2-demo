@@ -11,7 +11,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  * Class Book
  * @package Bookkeeper\ApplicationBundle\Entity
  *
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="Bookkeeper\ApplicationBundle\Entity\BookRepository")
  * @ORM\Table(name="book")
  *
  * @UniqueEntity("title")
