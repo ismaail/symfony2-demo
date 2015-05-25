@@ -25,6 +25,11 @@ class BookModel
     protected $cache;
 
     /**
+     * @var \Bookkeeper\ApplicationBundle\Entity\BookRepository
+     */
+    protected $repository;
+
+    /**
      * @var int
      */
     protected $cacheTtl;
@@ -79,15 +84,15 @@ class BookModel
     }
 
     /**
-     * Get single book by slug
+     * Find single book by slug
      *
      * @param string $slug
      *
      * @return \Bookkeeper\ApplicationBundle\Entity\Book
      */
-    public function getBookBySlug($slug)
+    public function findBySlug($slug)
     {
-        $key = sprintf("books_slug_%s", $slug);
+        $key = sprintf("book_slug_%s", $slug);
 
         // Get from cache
         $cachedBook = $this->cache->fetch($key);
@@ -95,13 +100,7 @@ class BookModel
             return $cachedBook;
         }
 
-        $qb = $this->getEntityManager()->createQueryBuilder();
-        $qb->select('b')
-            ->from('BookkeeperApplicationBundle:Book', 'b')
-            ->where('b.slug = :slug')
-            ->setParameter('slug', $slug);
-
-        $book = $qb->getQuery()->getSingleResult();
+        $book = $this->getReposiroty()->findBySlug($slug);
 
         // Save to cache
         $this->cache->save($key, $book, $this->cacheTtl);
@@ -144,5 +143,19 @@ class BookModel
         }
 
         return $this->entityManager;
+    }
+
+    /**
+     * Get Book Repository
+     *
+     * @return \Bookkeeper\ApplicationBundle\Entity\BookRepository|\Doctrine\ORM\EntityRepository
+     */
+    protected function getReposiroty()
+    {
+        if (null === $this->repository) {
+            $this->repository = $this->getEntityManager()->getRepository('BookkeeperApplicationBundle:Book');
+        }
+
+        return $this->repository;
     }
 }
