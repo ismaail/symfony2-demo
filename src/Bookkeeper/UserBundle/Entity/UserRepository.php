@@ -8,6 +8,10 @@ use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 
+/**
+ * Class UserRepository
+ * @package Bookkeeper\UserBundle\Entity
+ */
 class UserRepository extends EntityRepository implements UserProviderInterface
 {
     /**
