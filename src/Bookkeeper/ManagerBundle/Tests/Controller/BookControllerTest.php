@@ -197,7 +197,7 @@ class BookControllerTest extends WebTestCase
     private function mockBookModelGetBookBySlug($slug)
     {
         $bookModelMock = $this->getMockBuilder('Bookkeeper\ApplicationBundle\Model\BooModel')
-            ->setMethods(array('getBooks', 'getBookBySlug'))
+            ->setMethods(array('getBooks', 'findBySlug'))
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -208,7 +208,7 @@ class BookControllerTest extends WebTestCase
         $slugReflectionProperty->setValue($book, $slug);
 
         $bookModelMock->expects($this->once())
-            ->method('getBookBySlug')
+            ->method('findBySlug')
             ->with('book-title')
             ->will($this->returnValue($book));
 

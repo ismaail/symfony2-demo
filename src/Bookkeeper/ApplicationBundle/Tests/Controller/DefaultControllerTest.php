@@ -28,7 +28,7 @@ class DefaultControllerTest extends WebTestCase
     public function getBookModelMock()
     {
         return $this->getMockBuilder('Bookkeeper\ApplicationBundle\Model\BooModel')
-                    ->setMethods(array('getBooks', 'getBookBySlug'))
+                    ->setMethods(array('getBooks', 'findBySlug'))
                     ->disableOriginalConstructor()
                     ->getMock();
     }
@@ -69,7 +69,7 @@ class DefaultControllerTest extends WebTestCase
         $slugReflectionProperty->setValue($book, 'title-book');
 
         $bookModelMock->expects($this->once())
-                      ->method('getBookBySlug')
+                      ->method('findBySlug')
                       ->with('book-title')
                       ->will($this->returnValue($book));
 
@@ -93,7 +93,7 @@ class DefaultControllerTest extends WebTestCase
         $bookModelMock = $this->getBookModelMock();
 
         $bookModelMock->expects($this->once())
-                      ->method('getBookBySlug')
+                      ->method('findBySlug')
                       ->with('no-exists-book')
                       ->will($this->throwException(new \Doctrine\ORM\NoResultException()));
 

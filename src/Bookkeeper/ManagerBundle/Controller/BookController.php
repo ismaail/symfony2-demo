@@ -73,7 +73,7 @@ class BookController extends Controller
     public function editAction($slug)
     {
         try {
-            $book = $this->getBookModel()->getBookBySlug($slug);
+            $book = $this->getBookModel()->findBySlug($slug);
             $form = $this->createBookTypeForm($book, false);
 
             return $this->render('BookkeeperManagerBundle:Book:edit.html.twig', array(
@@ -97,7 +97,7 @@ class BookController extends Controller
     public function updateAction(Request $request, $slug)
     {
         try {
-            $book = $this->getBookModel()->getBookBySlug($slug);
+            $book = $this->getBookModel()->findBySlug($slug);
             $form = $this->createBookTypeForm($book, false);
 
             $form->handleRequest($request);
@@ -131,7 +131,7 @@ class BookController extends Controller
     public function deleteAction(Request $request, $slug)
     {
         try {
-            $book = $this->getBookModel()->getBookBySlug($slug);
+            $book = $this->getBookModel()->findBySlug($slug);
             $form = $this->createBookDeleteForm($book);
 
             $form->handleRequest($request);
