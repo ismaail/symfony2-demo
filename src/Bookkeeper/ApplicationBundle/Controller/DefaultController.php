@@ -47,7 +47,7 @@ class DefaultController extends Controller
     public function showAction($slug)
     {
         try {
-            $book = $this->getBookModel()->getBookBySlug($slug);
+            $book = $this->getBookModel()->findBySlug($slug);
 
             return $this->render('BookkeeperApplicationBundle:Default:show.html.twig', array(
                 'book' => $book,
