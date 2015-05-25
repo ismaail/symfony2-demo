@@ -1,5 +1,6 @@
 <?php
-namespace Bookkeeper\ApplicationBundle\Entity;
+
+namespace Bookkeeper\UserBundle\Entity;
 
 use Doctrine\ORM\EntityRepository;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;

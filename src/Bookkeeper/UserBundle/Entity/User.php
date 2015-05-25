@@ -1,6 +1,6 @@
 <?php
 
-namespace Bookkeeper\ApplicationBundle\Entity;
+namespace Bookkeeper\UserBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\Role\Role;
@@ -11,7 +11,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  * Class User
  * @package Bookkeeper\ApplicationBundle\Entity
  *
- * @ORM\Entity(repositoryClass="Bookkeeper\ApplicationBundle\Entity\UserRepository")
+ * @ORM\Entity(repositoryClass="Bookkeeper\UserBundle\Entity\UserRepository")
  * @ORM\Table(name="user")
  *
  * @UniqueEntity("username")
