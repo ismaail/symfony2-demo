@@ -7,7 +7,7 @@ use Symfony\Component\BrowserKit\Cookie;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use Bookkeeper\ApplicationBundle\Entity\Book as EntityBook;
-use Bookkeeper\ApplicationBundle\Entity\User as EntityUser;
+use Bookkeeper\UserBundle\Entity\User as EntityUser;
 
 /**
  * Class BookControllerTest
@@ -132,7 +132,7 @@ class BookControllerTest extends WebTestCase
     public function mockBookkeeperEntityUser()
     {
         $mockUser = $this
-            ->getMockBuilder('\Bookkeeper\ApplicationBundle\Entity\User')
+            ->getMockBuilder('\Bookkeeper\UserBundle\Entity\User')
             ->disableOriginalConstructor()
             ->setMethods(array('serialize'))
             ->getMock();
@@ -142,7 +142,7 @@ class BookControllerTest extends WebTestCase
             ->method('serialize')
             ->will($this->returnValue('a:3:{i:0;i:1;i:1;s:5:"admin";i:2;s:10:"ROLE_ADMIN";}'));
 
-        $reflectionClass = new \ReflectionClass('\Bookkeeper\ApplicationBundle\Entity\User');
+        $reflectionClass = new \ReflectionClass('\Bookkeeper\UserBundle\Entity\User');
         $reflectionIdProperty = $reflectionClass->getProperty('id');
         $reflectionIdProperty->setAccessible(true);
         $reflectionIdProperty->setValue($mockUser, 1);

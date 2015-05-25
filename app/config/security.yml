@@ -1,10 +1,10 @@
 security:
     providers:
         administrators:
-            entity: { class: BookkeeperApplicationBundle:User, property: username }
+            entity: { class: BookkeeperUserBundle:User, property: username }
 
     encoders:
-        Bookkeeper\ApplicationBundle\Entity\User:
+        Bookkeeper\UserBundle\Entity\User:
             algorithm: bcrypt
             cost: 12
 
