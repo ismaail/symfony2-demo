@@ -18,10 +18,12 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  */
 class User implements UserInterface, \Serializable
 {
-    /**
+    /**#@+
      * @const string
      */
-    const ROLE_ADMIN = 'ROLE_ADMIN';
+    const ROLE_ADMIN   = 'ROLE_ADMIN';
+    const ROLE_MEMBER  = 'ROLE_MEMBER';
+    /**#@-*/
 
     /**
      * @var int
