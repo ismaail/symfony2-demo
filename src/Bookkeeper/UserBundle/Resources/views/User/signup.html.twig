@@ -1,0 +1,27 @@
+{% extends 'base.html.twig'  %}
+
+{% block title %}Sign-Up | Bookkeeper{% endblock %}
+
+{% block body %}
+    <h1>Sign-Up</h1>
+    {{ form_start(form, {attr: {'class': 'form-horizontal', novalidate: 'novalidate'}}) }}
+        <div class="form-group">
+            {{ form_label(form.username, null, {'label_attr': {'class':'col-sm-2 col-md-2 col-lg-2 control-label'}}) }}
+            <div class="col-sm-10 col-md-8 col-lg-7">{{ form_widget(form.username, {attr: {class: 'input-sm form-control'}}) }}</div>
+            <div class="alert alert-danger col-sm-offset-2 col-lg-offset-2 col-sm-8 col-md-6">{{ form_errors(form.username) }}</div>
+        </div>
+        <div class="form-group">
+            {{ form_label(form.password.first, 'Password', {'label_attr': {'class':'col-sm-2 col-md-2 col-lg-2 control-label'}}) }}
+            <div class="col-sm-10 col-md-8 col-lg-7">{{ form_widget(form.password.first, {attr: {class: 'input-sm form-control'}}) }}</div>
+            <div class="alert alert-danger col-sm-offset-2 col-lg-offset-2 col-sm-8 col-md-6">{{ form_errors(form.password.first) }}</div>
+        </div>
+        <div class="form-group">
+            {{ form_label(form.password.second, 'Confirm password', {'label_attr': {'class':'col-sm-2 col-md-2 col-lg-2 control-label'}}) }}
+            <div class="col-sm-10 col-md-8 col-lg-7">{{ form_widget(form.password.second, {attr: {class: 'input-sm form-control'}}) }}</div>
+            <div class="alert alert-danger col-sm-offset-2 col-lg-offset-2 col-sm-8 col-md-6">{{ form_errors(form.password.second) }}</div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-md-offset-2 col-lg-offset-2 col-sm-4 col-md-2">{{ form_widget(form.submit, {attr: {class: 'input-sm form-control'}}) }}</div>
+        </div>
+    {{ form_end(form) }}
+{% endblock %}

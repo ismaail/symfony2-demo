@@ -5,6 +5,7 @@ namespace Bookkeeper\UserBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\Role\Role;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
@@ -18,10 +19,12 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  */
 class User implements UserInterface, \Serializable
 {
-    /**
+    /**#@+
      * @const string
      */
-    const ROLE_ADMIN = 'ROLE_ADMIN';
+    const ROLE_ADMIN   = 'ROLE_ADMIN';
+    const ROLE_MEMBER  = 'ROLE_MEMBER';
+    /**#@-*/
 
     /**
      * @var int
@@ -36,6 +39,9 @@ class User implements UserInterface, \Serializable
      * @var string
      *
      * @ORM\Column(name="username", type="string", length=50)
+     *
+     * @Assert\NotBlank()
+     * @Assert\Length(min=4)
      */
     protected $username;
 
@@ -43,6 +49,9 @@ class User implements UserInterface, \Serializable
      * @var string
      *
      * @ORM\Column(name="password", type="string", length=64)
+     *
+     * @Assert\NotBlank()
+     * @Assert\Length(min=8, max=120)
      */
     protected $password;
 
@@ -108,7 +117,7 @@ class User implements UserInterface, \Serializable
      */
     public function setPassword($password)
     {
-        $this->password = $this->hash($password);
+        $this->password = $password;
 
         return $this;
     }
@@ -168,7 +177,7 @@ class User implements UserInterface, \Serializable
      *
      * @return bool|string
      */
-    protected function hash($string)
+    public function hash($string)
     {
         return password_hash($string, PASSWORD_BCRYPT);
     }
