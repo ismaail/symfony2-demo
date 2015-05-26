@@ -5,6 +5,7 @@ namespace Bookkeeper\UserBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\Role\Role;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
@@ -38,6 +39,9 @@ class User implements UserInterface, \Serializable
      * @var string
      *
      * @ORM\Column(name="username", type="string", length=50)
+     *
+     * @Assert\NotBlank()
+     * @Assert\Length(min=4)
      */
     protected $username;
 
@@ -45,6 +49,9 @@ class User implements UserInterface, \Serializable
      * @var string
      *
      * @ORM\Column(name="password", type="string", length=64)
+     *
+     * @Assert\NotBlank()
+     * @Assert\Length(min=8, max=120)
      */
     protected $password;
 
