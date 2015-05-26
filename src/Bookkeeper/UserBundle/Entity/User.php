@@ -177,7 +177,7 @@ class User implements UserInterface, \Serializable
      *
      * @return bool|string
      */
-    protected function hash($string)
+    public function hash($string)
     {
         return password_hash($string, PASSWORD_BCRYPT);
     }
