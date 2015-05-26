@@ -13,9 +13,10 @@
         <header class="main-header container-fluid">
             <div class="logo col-sm-8"><a href="/"><h1>Book Keeper</h1></a></div>
             <div class="user-box col-sm-4 pull-right">
-            {% if is_granted("ROLE_ADMIN") %}
+            {% if app.user %}
                 <span>{{ app.user.username }}</span> | <a href="/logout">Logout</a>
             {% else %}
+                <a href="{{ path('signup') }}">Sign-up</a> |
                 <a href="/login">Login</a>
             {% endif %}
             </div>
