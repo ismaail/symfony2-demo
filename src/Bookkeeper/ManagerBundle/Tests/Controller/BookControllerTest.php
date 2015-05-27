@@ -38,8 +38,7 @@ class BookControllerTest extends WebTestCase
     {
         $this->client->request('GET', '/new');
 
-        $this->assertTrue($this->client->getResponse() instanceof RedirectResponse);
-        $this->assertFalse($this->client->getResponse()->isSuccessful());
+        $this->assertTrue($this->client->getResponse()->isRedirect());
 
         $this->client->followRedirect();
         $this->assertStringEndsWith('/login', $this->client->getHistory()->current()->getUri());
@@ -58,8 +57,7 @@ class BookControllerTest extends WebTestCase
     {
         $this->client->request('POST', '/create');
 
-        $this->assertTrue($this->client->getResponse() instanceof RedirectResponse);
-        $this->assertFalse($this->client->getResponse()->isSuccessful());
+        $this->assertTrue($this->client->getResponse()->isRedirect());
 
         $this->client->followRedirect();
         $this->assertStringEndsWith('/login', $this->client->getHistory()->current()->getUri());
@@ -79,8 +77,7 @@ class BookControllerTest extends WebTestCase
     {
         $this->client->request('GET', '/edit/book-title');
 
-        $this->assertTrue($this->client->getResponse() instanceof RedirectResponse);
-        $this->assertFalse($this->client->getResponse()->isSuccessful());
+        $this->assertTrue($this->client->getResponse()->isRedirect());
 
         $this->client->followRedirect();
         $this->assertStringEndsWith('/login', $this->client->getHistory()->current()->getUri());
@@ -100,8 +97,7 @@ class BookControllerTest extends WebTestCase
     {
         $this->client->request('PUT', '/update/book-title');
 
-        $this->assertTrue($this->client->getResponse() instanceof RedirectResponse);
-        $this->assertFalse($this->client->getResponse()->isSuccessful());
+        $this->assertTrue($this->client->getResponse()->isRedirect());
 
         $this->client->followRedirect();
         $this->assertStringEndsWith('/login', $this->client->getHistory()->current()->getUri());
@@ -122,8 +118,7 @@ class BookControllerTest extends WebTestCase
     {
         $this->client->request('DELETE', '/delete/book-title');
 
-        $this->assertTrue($this->client->getResponse() instanceof RedirectResponse);
-        $this->assertFalse($this->client->getResponse()->isSuccessful());
+        $this->assertTrue($this->client->getResponse()->isRedirect());
 
         $this->client->followRedirect();
         $this->assertStringEndsWith('/login', $this->client->getHistory()->current()->getUri());
