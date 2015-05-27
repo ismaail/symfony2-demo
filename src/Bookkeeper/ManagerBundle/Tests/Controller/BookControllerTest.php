@@ -31,7 +31,7 @@ class BookControllerTest extends WebTestCase
 
         $this->client->request('GET', '/new');
 
-        $this->assertTrue($this->client->getResponse()->isSuccessful());
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), 'ROLE_ADMIN cannot access /new path');
     }
 
     public function testNewActionNotAccessibleByAnonymousUser()
@@ -50,7 +50,7 @@ class BookControllerTest extends WebTestCase
 
         $this->client->request('POST', '/create');
 
-        $this->assertTrue($this->client->getResponse()->isSuccessful());
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), 'ROLE_ADMIN cannot access /create path');
     }
 
     public function testCreateActionNotAccessibleByAnonymousUser()
@@ -70,7 +70,7 @@ class BookControllerTest extends WebTestCase
 
         $this->client->request('GET', '/edit/book-title');
 
-        $this->assertTrue($this->client->getResponse()->isSuccessful());
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), 'ROLE_ADMIN cannot access /edit path');
     }
 
     public function testEditActionNotAccessibleByAnonymousUser()
@@ -90,7 +90,7 @@ class BookControllerTest extends WebTestCase
 
         $this->client->request('PUT', '/update/book-title');
 
-        $this->assertTrue($this->client->getResponse()->isSuccessful());
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), 'ROLE_ADMIN cannot access /update path');
     }
 
     public function testUpdateActionNotAccessibleByAnonymousUser()
