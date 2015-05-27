@@ -140,7 +140,7 @@ class BookControllerTest extends WebTestCase
         $mockUser
             ->expects($this->atLeastOnce())
             ->method('serialize')
-            ->will($this->returnValue(sprintf('a:3:{i:0;i:1;i:1;s:4:"user";i:2;s:10:"%s";}', $role)));
+            ->will($this->returnValue(sprintf('a:3:{i:0;i:1;i:1;s:4:"user";i:2;s:%d:"%s";}', strlen($role), $role)));
 
         $reflectionClass = new \ReflectionClass('\Bookkeeper\UserBundle\Entity\User');
         // id property
