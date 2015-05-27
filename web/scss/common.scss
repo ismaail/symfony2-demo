@@ -230,6 +230,11 @@ $lign-green: #DFF0D8;
 		padding-top: 7px;
 	}
 
+	// fix checkbox horizontal alignement
+	.form-checkbox-holder {
+		padding-top: 4px;
+	}
+
 	// fix radio labels
 	> div {
 		label {
