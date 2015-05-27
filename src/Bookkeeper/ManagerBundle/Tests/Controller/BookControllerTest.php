@@ -34,6 +34,15 @@ class BookControllerTest extends WebTestCase
         $this->assertTrue($this->client->getResponse()->isSuccessful(), 'ROLE_ADMIN cannot access /new path');
     }
 
+    public function testNewActionNotAccessibleByRoleMember()
+    {
+        $this->logIn(EntityUser::ROLE_MEMBER);
+
+        $this->client->request('GET', '/new');
+
+        $this->assertTrue($this->client->getResponse()->isForbidden(), 'ROLE_MEMEBER can access /new path');
+    }
+
     public function testNewActionNotAccessibleByAnonymousUser()
     {
         $this->client->request('GET', '/new');
@@ -51,6 +60,15 @@ class BookControllerTest extends WebTestCase
         $this->client->request('POST', '/create');
 
         $this->assertTrue($this->client->getResponse()->isSuccessful(), 'ROLE_ADMIN cannot access /create path');
+    }
+
+    public function testCreateActionNotAccessibleByRoleMember()
+    {
+        $this->logIn(EntityUser::ROLE_MEMBER);
+
+        $this->client->request('POST', '/create');
+
+        $this->assertTrue($this->client->getResponse()->isForbidden(), 'ROLE_MEMEBER can access /create path');
     }
 
     public function testCreateActionNotAccessibleByAnonymousUser()
@@ -73,6 +91,15 @@ class BookControllerTest extends WebTestCase
         $this->assertTrue($this->client->getResponse()->isSuccessful(), 'ROLE_ADMIN cannot access /edit path');
     }
 
+    public function testEditActionNotAccessibleByRoleMember()
+    {
+        $this->logIn(EntityUser::ROLE_MEMBER);
+
+        $this->client->request('GET', '/edit/book-title');
+
+        $this->assertTrue($this->client->getResponse()->isForbidden(), 'ROLE_MEMEBER can access /edit path');
+    }
+
     public function testEditActionNotAccessibleByAnonymousUser()
     {
         $this->client->request('GET', '/edit/book-title');
@@ -91,6 +118,15 @@ class BookControllerTest extends WebTestCase
         $this->client->request('PUT', '/update/book-title');
 
         $this->assertTrue($this->client->getResponse()->isSuccessful(), 'ROLE_ADMIN cannot access /update path');
+    }
+
+    public function testUpdateActionNotAccessibleByRoleMember()
+    {
+        $this->logIn(EntityUser::ROLE_MEMBER);
+
+        $this->client->request('PUT', '/update/book-title');
+
+        $this->assertTrue($this->client->getResponse()->isForbidden(), 'ROLE_MEMEBER can access /update path');
     }
 
     public function testUpdateActionNotAccessibleByAnonymousUser()
@@ -112,6 +148,15 @@ class BookControllerTest extends WebTestCase
 
         // /delete request is always redirected no matter the request is successful or not
         $this->assertTrue($this->client->getResponse() instanceof RedirectResponse);
+    }
+
+    public function testDeleteActionNotAccessibleByRoleMember()
+    {
+        $this->logIn(EntityUser::ROLE_MEMBER);
+
+        $this->client->request('DELETE', '/delete/book-title');
+
+        $this->assertTrue($this->client->getResponse()->isForbidden(), 'ROLE_MEMEBER can access /delete path');
     }
 
     public function testDeleteActionNotAccessibleByAnonymousUser()
