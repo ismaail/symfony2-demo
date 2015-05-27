@@ -3,6 +3,7 @@
 namespace Bookkeeper\ApplicationBundle\Tests\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Doctrine\ORM\NoResultException;
 use Bookkeeper\ApplicationBundle\Controller\DefaultController;
 use Bookkeeper\ApplicationBundle\Entity\Book as EntityBook;
 
@@ -95,7 +96,7 @@ class DefaultControllerTest extends WebTestCase
         $bookModelMock->expects($this->once())
                       ->method('findBySlug')
                       ->with('no-exists-book')
-                      ->will($this->throwException(new \Doctrine\ORM\NoResultException()));
+                      ->will($this->throwException(new NoResultException()));
 
         $this->client->getContainer()->set('book_model', $bookModelMock);
 
