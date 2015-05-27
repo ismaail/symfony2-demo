@@ -52,6 +52,7 @@ class DefaultController extends Controller
      */
     private function isLoggedIn()
     {
-        return $this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY');
+        return $this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')
+            || $this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED');
     }
 }
