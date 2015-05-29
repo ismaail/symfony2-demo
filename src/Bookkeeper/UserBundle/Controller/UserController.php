@@ -42,6 +42,7 @@ class UserController extends Controller
             if ($form->isValid()) {
                 // Create new user account
                 $this->getUserModel()->create($user);
+                $this->sendActivationEmail($user);
 
                 $this->get('session')->getFlashBag()->add('success', 'Your account successfully created');
                 return $this->redirectToRoute('login');
@@ -54,6 +55,41 @@ class UserController extends Controller
         return $this->render('BookkeeperUserBundle:User:signup.html.twig', array(
             'form' => $form->createView(),
         ));
+    }
+
+    /**
+     * Activate pending user account
+     *
+     * @param Request $request
+     *
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function activateAction(Request $request)
+    {
+        $token = $request->get('token');
+
+        if (null !== $token) {
+            /** @var Entity\User $user */
+            $user = $this->get('security.context')->getToken()->getUser();
+
+            if ($token === $user->getToken()) {
+                // Activate user account
+                $this->getUserModel()->activate($user);
+
+                $this->get('session')->getFlashBag()->add('success', 'Your account has been successfully activated');
+
+                if ($this->isLoggedIn()) {
+                    return $this->redirectToRoute('home');
+                } else {
+                    return $this->redirectToRoute('login');
+                }
+
+            } else {
+                $this->get('session')->getFlashBag()->add('error', 'Wrong token value');
+            }
+        }
+
+        return $this->render('BookkeeperUserBundle:User:activate.html.twig');
     }
 
     /**
@@ -96,5 +132,24 @@ class UserController extends Controller
     {
         return $this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')
             || $this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED');
+    }
+
+    /**
+     * @param Entity\User $user
+     *
+     * @throws \Bookkeeper\ApplicationBundle\Exception\ApplicationException
+     */
+    private function sendActivationEmail($user)
+    {
+        // Send email activation
+        /** @var \Bookkeeper\ApplicationBundle\Service\Mailer $mailer */
+        $mailer = $this->get('app_mailer');
+
+        $mailer->setTextBody($this->renderView(
+            'BookkeeperUserBundle:Email:activate_account.html.twig',
+            array('user' => $user)
+        ));
+
+        $mailer->send($user->getEmail(), 'Bookkeeper.dev - Activate your account');
     }
 }

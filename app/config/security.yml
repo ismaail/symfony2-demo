@@ -33,3 +33,4 @@ security:
         - { path: ^/edit, roles: ROLE_ADMIN }
         - { path: ^/update, roles: ROLE_ADMIN }
         - { path: ^/delete, roles: ROLE_ADMIN }
+        - { path: ^/user/activate, roles: ROLE_PENDING }
