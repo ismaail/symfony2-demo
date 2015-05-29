@@ -42,6 +42,7 @@ class UserController extends Controller
             if ($form->isValid()) {
                 // Create new user account
                 $this->getUserModel()->create($user);
+                $this->sendActivationEmail($user);
 
                 $this->get('session')->getFlashBag()->add('success', 'Your account successfully created');
                 return $this->redirectToRoute('login');
@@ -96,5 +97,24 @@ class UserController extends Controller
     {
         return $this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')
             || $this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED');
+    }
+
+    /**
+     * @param Entity\User $user
+     *
+     * @throws \Bookkeeper\ApplicationBundle\Exception\ApplicationException
+     */
+    private function sendActivationEmail($user)
+    {
+        // Send email activation
+        /** @var \Bookkeeper\ApplicationBundle\Service\Mailer $mailer */
+        $mailer = $this->get('app_mailer');
+
+        $mailer->setTextBody($this->renderView(
+            'BookkeeperUserBundle:Email:activate_account.html.twig',
+            array('user' => $user)
+        ));
+
+        $mailer->send($user->getEmail(), 'Bookkeeper.dev - Activate your account');
     }
 }
