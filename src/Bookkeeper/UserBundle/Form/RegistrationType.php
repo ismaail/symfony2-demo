@@ -24,7 +24,8 @@ class RegistrationType extends AbstractType
                 ->add('password', 'repeated', array(
                     'type'            => 'password',
                     'invalid_message' => 'Passwords do not match'
-                ));
+                ))
+                ->add('email', 'email');
     }
 
     /**
