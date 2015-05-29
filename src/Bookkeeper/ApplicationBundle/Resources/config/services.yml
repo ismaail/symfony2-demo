@@ -3,3 +3,7 @@ services:
     book_model:
         class: Bookkeeper\ApplicationBundle\Model\BookModel
         arguments: ['@service_container']
+
+    app_mailer:
+        class: Bookkeeper\ApplicationBundle\Service\Mailer
+        arguments: ['@service_container']
