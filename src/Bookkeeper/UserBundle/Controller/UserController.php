@@ -58,6 +58,41 @@ class UserController extends Controller
     }
 
     /**
+     * Activate pending user account
+     *
+     * @param Request $request
+     *
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function activateAction(Request $request)
+    {
+        $token = $request->get('token');
+
+        if (null !== $token) {
+            /** @var Entity\User $user */
+            $user = $this->get('security.context')->getToken()->getUser();
+
+            if ($token === $user->getToken()) {
+                // Activate user account
+                $this->getUserModel()->activate($user);
+
+                $this->get('session')->getFlashBag()->add('success', 'Your account has been successfully activated');
+
+                if ($this->isLoggedIn()) {
+                    return $this->redirectToRoute('home');
+                } else {
+                    return $this->redirectToRoute('login');
+                }
+
+            } else {
+                $this->get('session')->getFlashBag()->add('error', 'Wrong token value');
+            }
+        }
+
+        return $this->render('BookkeeperUserBundle:User:activate.html.twig');
+    }
+
+    /**
      * Create SignUp form
      *
      * @param Entity\User $user

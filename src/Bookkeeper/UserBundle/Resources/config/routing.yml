@@ -11,3 +11,8 @@ logout:
 signup:
     path: /signup
     defaults: { _controller: "BookkeeperUserBundle:User:SignUp" }
+
+account_activate:
+    path: /user/activate
+    defaults: { _controller: "BookkeeperUserBundle:User:activate" }
+    requirements: { _method: get }
