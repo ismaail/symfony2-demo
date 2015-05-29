@@ -59,9 +59,26 @@ class User implements UserInterface, \Serializable
     /**
      * @var string
      *
+     * @ORM\Column(name="email", type="string", length=255)
+     *
+     * @Assert\NotBlank
+     * @Assert\Email
+     */
+    protected $email;
+
+    /**
+     * @var string
+     *
      * @ORM\Column(name="roles", type="string", length=255)
      */
     protected $roles;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="token", type="string", nullable=true)
+     */
+    protected $token;
 
     /**
      * @return int
@@ -124,6 +141,26 @@ class User implements UserInterface, \Serializable
     }
 
     /**
+     * @return string
+     */
+    public function getEmail()
+    {
+        return $this->email;
+    }
+
+    /**
+     * @param string $email
+     *
+     * @return User
+     */
+    public function setEmail($email)
+    {
+        $this->email = $email;
+
+        return $this;
+    }
+
+    /**
      * @param array $roles
      *
      * @return User
@@ -147,6 +184,26 @@ class User implements UserInterface, \Serializable
     public function getRoles()
     {
         return explode(',', $this->roles);
+    }
+
+    /**
+     * @return string
+     */
+    public function getToken()
+    {
+        return $this->token;
+    }
+
+    /**
+     * @param string $token
+     *
+     * @return User
+     */
+    public function setToken($token)
+    {
+        $this->token = $token;
+
+        return $this;
     }
 
     /**
