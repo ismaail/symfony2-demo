@@ -3,6 +3,7 @@
 namespace Bookkeeper\UserBundle\Model;
 
 use Symfony\Component\DependencyInjection\ContainerInterface as Container;
+use Bookkeeper\UserBundle\Security\Token;
 use Bookkeeper\UserBundle\Entity\User;
 
 /**
@@ -58,7 +59,8 @@ class UserModel
         try {
             // Prepare user data
             $user->setPassword($user->hash($user->getPassword()));
-            $user->setRoles(array($user::ROLE_MEMBER));
+            $user->setRoles(array($user::ROLE_PENDING));
+            $user->setToken($this->generateToken());
 
             $em = $this->getEntityManager();
             $em->beginTransaction();
@@ -73,5 +75,44 @@ class UserModel
 
             throw new ModelException("Error creating new user account", 0, $e);
         }
+    }
+
+    /**
+     * Activate user account by setting role to MEMBER
+     *
+     * @param User $user
+     *
+     * @return User
+     *
+     * @throws ModelException
+     */
+    public function activate(User $user)
+    {
+        try {
+            $em = $this->getEntityManager();
+            $em->beginTransaction();
+
+            $user->setRoles(array(User::ROLE_MEMBER));
+            $user->setToken(null);
+
+            $em->flush();
+            $em->commit();
+
+            return $user;
+
+        } catch (\Exception $e) {
+            $this->getEntityManager()->rollback();
+
+            throw new ModelException("Error activating user account", 0, $e);
+        }
+    }
+
+    /**
+     * @return string
+     */
+    protected function generateToken()
+    {
+        $token = new Token();
+        return $token->generate(21);
     }
 }

@@ -22,8 +22,9 @@ class User implements UserInterface, \Serializable
     /**#@+
      * @const string
      */
-    const ROLE_ADMIN   = 'ROLE_ADMIN';
-    const ROLE_MEMBER  = 'ROLE_MEMBER';
+    const ROLE_ADMIN    = 'ROLE_ADMIN';
+    const ROLE_MEMBER   = 'ROLE_MEMBER';
+    const ROLE_PENDING  = 'ROLE_PENDING';
     /**#@-*/
 
     /**
