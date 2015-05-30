@@ -110,11 +110,11 @@ class BookModel
     }
 
     /**
-     * Create new Book in database
+     * Create new Book
      *
      * @param Book $book
      */
-    public function createNewBook(Book $book)
+    public function create(Book $book)
     {
         $em = $this->getEntityManager();
         $em->persist($book);
