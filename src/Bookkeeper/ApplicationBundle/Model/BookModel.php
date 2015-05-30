@@ -149,16 +149,29 @@ class BookModel
         }
     }
 
-
     /**
      * Remove book record
      *
      * @param Book $book
+     *
+     * @throws ModelException
      */
     public function remove(Book $book)
     {
-        $this->getEntityManager()->remove($book);
-        $this->getEntityManager()->flush();
+        try {
+            $em = $this->getEntityManager();
+            $em->beginTransaction();
+
+            $book = $this->merge($book);
+            $em->remove($book);
+            $em->flush();
+            $em->commit();
+
+        } catch (\Exception $e) {
+            $this->getEntityManager()->rollback();
+
+            throw new ModelException("Error removing book", 0, $e);
+        }
     }
 
     /**
