@@ -160,4 +160,12 @@ class Book
              ->setDescription($data['description'])
              ->setPages($data['pages']);
     }
+
+    /**
+     * @return string
+     */
+    public function __toString()
+    {
+        return __CLASS__;
+    }
 }
