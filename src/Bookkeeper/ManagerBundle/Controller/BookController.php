@@ -98,13 +98,14 @@ class BookController extends Controller
     {
         try {
             $book = $this->getBookModel()->findBySlug($slug);
+            /** @var Book $book */
+            $book = $this->getBookModel()->merge($book);
             $form = $this->createBookTypeForm($book, false);
 
             $form->handleRequest($request);
 
             if ($form->isValid()) {
-                $em = $this->getDoctrine()->getManager();
-                $em->flush();
+                $this->getBookModel()->update($book, $slug);
 
                 $this->get('session')->getFlashBag()->add('success', 'Book has been created.');
                 return $this->redirectToRoute('book_show', array('slug' => $book->getSlug()));

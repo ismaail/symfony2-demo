@@ -188,4 +188,16 @@ class BookModel
 
         return $this->repository;
     }
+
+    /**
+     * Merge entity object
+     *
+     * @param $object
+     *
+     * @return object
+     */
+    public function merge($object)
+    {
+        return $this->getEntityManager()->merge($object);
+    }
 }
