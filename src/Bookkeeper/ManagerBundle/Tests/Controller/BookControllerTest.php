@@ -262,7 +262,7 @@ class BookControllerTest extends WebTestCase
             ->with('book-title')
             ->will($this->returnValue($book));
 
-        $bookModelMock->expects($this->once())
+        $bookModelMock->expects($this->any())
             ->method('merge')
             ->with($book)
             ->will($this->returnValue($book));
