@@ -3,6 +3,7 @@
 namespace Bookkeeper\ApplicationBundle\Model;
 
 use Symfony\Component\DependencyInjection\ContainerInterface as Container;
+use Bookkeeper\ApplicationBundle\Model\ModelException;
 use Bookkeeper\ApplicationBundle\Entity\Book;
 
 /**
@@ -121,6 +122,35 @@ class BookModel
     }
 
     /**
+     * @param Book $book
+     * @param string $slug
+     *
+     * @return Book
+     *
+     * @throws ModelException
+     */
+    public function update(Book $book, $slug)
+    {
+        try {
+            $em = $this->getEntityManager();
+            $em->beginTransaction();
+            $em->flush();
+            $em->commit();
+
+            // Clear cache
+            $this->cache->delete(sprintf("book_slug_%s", $slug));
+
+            return $book;
+
+        } catch (\Exception $e) {
+            $this->getEntityManager()->rollback();
+
+            throw new ModelException("Error updating book", 0, $e);
+        }
+    }
+
+
+    /**
      * Remove book record
      *
      * @param Book $book
@@ -157,5 +187,17 @@ class BookModel
         }
 
         return $this->repository;
+    }
+
+    /**
+     * Merge entity object
+     *
+     * @param $object
+     *
+     * @return object
+     */
+    public function merge($object)
+    {
+        return $this->getEntityManager()->merge($object);
     }
 }
