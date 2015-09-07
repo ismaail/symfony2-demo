@@ -69,9 +69,11 @@ class BookModel
     public function getBooks($page, $limit)
     {
         $qb = $this->getEntityManager()->createQueryBuilder();
-        $qb->select('b')
+        $qb
+           ->select('b')
            ->from('BookkeeperApplicationBundle:Book', 'b')
-           ->orderBy('b.id', 'asc');
+           ->orderBy('b.id', 'asc')
+        ;
 
         /** @var \Knp\Component\Pager\Paginator $paginator */
         $paginator  = $this->container->get('knp_paginator');
