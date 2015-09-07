@@ -69,9 +69,11 @@ class BookModel
     public function getBooks($page, $limit)
     {
         $qb = $this->getEntityManager()->createQueryBuilder();
-        $qb->select('b')
+        $qb
+           ->select('b')
            ->from('BookkeeperApplicationBundle:Book', 'b')
-           ->orderBy('b.id', 'asc');
+           ->orderBy('b.id', 'asc')
+        ;
 
         /** @var \Knp\Component\Pager\Paginator $paginator */
         $paginator  = $this->container->get('knp_paginator');
@@ -137,8 +139,7 @@ class BookModel
             $em->flush();
             $em->commit();
 
-            // Clear cache
-            $this->cache->delete(sprintf("book_slug_%s", $slug));
+            $this->removeFromCache($slug);
 
             return $book;
 
@@ -162,16 +163,27 @@ class BookModel
             $em = $this->getEntityManager();
             $em->beginTransaction();
 
+            /** @var Book $book */
             $book = $this->merge($book);
             $em->remove($book);
             $em->flush();
             $em->commit();
+
+            $this->removeFromCache($book->getSlug());
 
         } catch (\Exception $e) {
             $this->getEntityManager()->rollback();
 
             throw new ModelException("Error removing book", 0, $e);
         }
+    }
+
+    /**
+     * @param string $slug
+     */
+    public function removeFromCache($slug)
+    {
+        $this->cache->delete(sprintf("book_slug_%s", $slug));
     }
 
     /**

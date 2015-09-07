@@ -1,0 +1,11 @@
+services:
+    sonata.admin.book:
+        class: Bookkeeper\AdminBundle\Admin\BookAdmin
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: "Content", label: "Book" }
+        arguments:
+            - ~
+            - Bookkeeper\ApplicationBundle\Entity\Book
+            - ~
+        calls:
+            - [ setTranslationDomain, [BookkeeperAdminBundle]]
