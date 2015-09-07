@@ -166,6 +166,6 @@ class Book
      */
     public function __toString()
     {
-        return __CLASS__;
+        return 'Book';
     }
 }
