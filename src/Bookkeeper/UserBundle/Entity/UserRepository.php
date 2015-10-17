@@ -53,6 +53,8 @@ class UserRepository extends EntityRepository implements UserProviderInterface
             throw new UnsupportedUserException(sprintf('Instances of "%s" are not supported.', $class));
         }
 
+        return $user;
+
         $refreshedUser = $this->find($user->getId());
         if (! $refreshedUser) {
             throw new UsernameNotFoundException(sprintf('User with id %s not found', json_encode($user->getId())));
