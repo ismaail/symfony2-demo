@@ -21,7 +21,7 @@ class Book
     /**
      * @var int
      *
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", nullable=false, options={"unsigned":true})
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      */
@@ -40,7 +40,7 @@ class Book
     /**
      * @var string
      *
-     * @ORM\Column(type="string", length=150)
+     * @ORM\Column(type="string", length=150, unique=true)
      *
      * @Gedmo\Slug(fields={"title"}, separator="-", unique=true)
      */
@@ -59,7 +59,7 @@ class Book
     /**
      * @var int
      *
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", nullable=false, options={"unsigned":true})
      *
      * @Assert\NotBlank()
      * @Assert\Type(type="integer")

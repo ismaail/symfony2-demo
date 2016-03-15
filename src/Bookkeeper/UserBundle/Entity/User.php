@@ -30,7 +30,7 @@ class User implements UserInterface, \Serializable
     /**
      * @var int
      *
-     * @ORM\Column(name="id", type="integer")
+     * @ORM\Column(name="id", type="integer", nullable=false, options={"unsigned":true})
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      */
@@ -49,7 +49,7 @@ class User implements UserInterface, \Serializable
     /**
      * @var string
      *
-     * @ORM\Column(name="password", type="string", length=64)
+     * @ORM\Column(name="password", type="string", length=64, options={"fixed":true})
      *
      * @Assert\NotBlank()
      * @Assert\Length(min=8, max=120)
@@ -76,7 +76,7 @@ class User implements UserInterface, \Serializable
     /**
      * @var string
      *
-     * @ORM\Column(name="token", type="string", nullable=true)
+     * @ORM\Column(name="token", type="string", length=21, nullable=true, options={"fixed":true})
      */
     protected $token;
 
