@@ -107,7 +107,7 @@ class BookController extends Controller
             if ($form->isValid()) {
                 $this->getBookModel()->update($book, $slug);
 
-                $this->get('session')->getFlashBag()->add('success', 'Book has been created.');
+                $this->get('session')->getFlashBag()->add('success', 'Book has been updated.');
                 return $this->redirectToRoute('book_show', array('slug' => $book->getSlug()));
             }
 
