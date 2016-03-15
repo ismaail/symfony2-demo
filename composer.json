@@ -47,7 +47,9 @@
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installAssets",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::removeSymfonyStandardFiles"
-        ]
+        ],
+        "test": "bin/phpunit --colors=always -c app/",
+        "test-report": "bin/phpunit -c app/ --coverage-html app/data/test-report"
     },
     "config": {
         "bin-dir": "bin"
