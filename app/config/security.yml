@@ -34,6 +34,7 @@ security:
         - { path: ^/update, roles: ROLE_ADMIN }
         - { path: ^/delete, roles: ROLE_ADMIN }
         - { path: ^/user/activate, roles: ROLE_PENDING }
+        - { path: ^/admin, roles: ROLE_ADMIN }
 
     # set access_strategy to unanimous, else you may have unexpected behaviors
     access_decision_manager:
