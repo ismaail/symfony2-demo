@@ -25,6 +25,8 @@ class UserRepository extends EntityRepository implements UserProviderInterface
      * @return UserInterface
      *
      * @throws UsernameNotFoundException if the user is not found
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function loadUserByUsername($username)
     {

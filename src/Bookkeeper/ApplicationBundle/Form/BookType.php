@@ -15,6 +15,8 @@ class BookType extends AbstractType
     /**
      * @param FormBuilderInterface $builder
      * @param array $options
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
