@@ -2,21 +2,28 @@
 
 namespace Bookkeeper\ApplicationBundle\Tests\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Doctrine\ORM\NoResultException;
+use Bookkeeper\ApplicationBundle\Exception\ApplicationException;
 use Bookkeeper\ApplicationBundle\Controller\DefaultController;
 use Bookkeeper\ApplicationBundle\Entity\Book as EntityBook;
+use Bookkeeper\ApplicationBundle\Tests\Traits\ModelMocker;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Doctrine\ORM\NoResultException;
 
 /**
  * Class DefaultControllerTest
  * @package Bookkeeper\ApplicationBundle\Tests\Controller
+ *
+ * @SuppressWarnings(PHPMD.CamelCaseMethodName)
+ * @codingStandardsIgnoreFile
  */
 class DefaultControllerTest extends WebTestCase
 {
+    use ModelMocker;
+
     /**
      * @var \Symfony\Bundle\FrameworkBundle\Client
      */
-    public $client;
+    protected $client;
 
     public function setUp()
     {
@@ -24,30 +31,21 @@ class DefaultControllerTest extends WebTestCase
     }
 
     /**
-     * @return \PHPUnit_Framework_MockObject_MockObject
+     * @test
      */
-    public function getBookModelMock()
+    public function indexAction_return_OK_response()
     {
-        return $this->getMockBuilder('Bookkeeper\ApplicationBundle\Model\BooModel')
-                    ->setMethods(array('getBooks', 'findBySlug'))
-                    ->disableOriginalConstructor()
-                    ->getMock();
-    }
-
-    public function testIndexAction()
-    {
-        // Mock BookModel
         $bookModelMock = $this->getBookModelMock();
 
         /** @var \Knp\Component\Pager\Paginator $paginator $paginator */
         $paginator = $this->client->getContainer()->get('knp_paginator');
 
-        $bookModelMock->expects($this->once())
-                      ->method('getBooks')
-                      ->with(1, 20)
-                      ->will($this->returnValue($paginator->paginate(array(), 1, 20)));
-
-        $this->client->getContainer()->set('book_model', $bookModelMock);
+        $bookModelMock
+            ->expects($this->once())
+            ->method('getBooks')
+            ->with(1, 20)
+            ->will($this->returnValue($paginator->paginate([], 1, 20)))
+        ;
 
         // Send the request
         $this->client->request('GET', '/');
@@ -55,26 +53,30 @@ class DefaultControllerTest extends WebTestCase
         // Assertions
         $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Get request to "/" was not successful');
 
+        $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
         $this->assertEquals('text/html; charset=UTF-8', $this->client->getResponse()->headers->get('Content-Type'));
     }
 
-    public function testShowAction()
+    /**
+     * @test
+     */
+    public function show_action_return_OK_response()
     {
-        // Mock BookModel
         $bookModelMock = $this->getBookModelMock();
 
-        $book                   = new EntityBook();
-        $bookReflectionClass    = new \ReflectionClass($book);
+        // Create Book Entity
+        $book = new EntityBook();
+        $bookReflectionClass = new \ReflectionClass($book);
         $slugReflectionProperty = $bookReflectionClass->getProperty('slug');
         $slugReflectionProperty->setAccessible(true);
         $slugReflectionProperty->setValue($book, 'title-book');
 
-        $bookModelMock->expects($this->once())
-                      ->method('findBySlug')
-                      ->with('book-title')
-                      ->will($this->returnValue($book));
-
-        $this->client->getContainer()->set('book_model', $bookModelMock);
+        $bookModelMock
+            ->expects($this->once())
+            ->method('findBySlug')
+            ->with('book-title')
+            ->will($this->returnValue($book))
+        ;
 
         // Send the request
         $this->client->request('GET', '/show/book-title');
@@ -85,92 +87,115 @@ class DefaultControllerTest extends WebTestCase
             'GET request to "/show/book-title" was not successful'
         );
 
+        $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
         $this->assertEquals('text/html; charset=UTF-8', $this->client->getResponse()->headers->get('Content-Type'));
     }
 
-    public function testShowActionReturns404ErrorIfBookNotFound()
+    /**
+     * @test
+     */
+    public function ShowAction_returns_404_error_if_book_is_not_found()
     {
-        // Mock BookModel
         $bookModelMock = $this->getBookModelMock();
 
-        $bookModelMock->expects($this->once())
-                      ->method('findBySlug')
-                      ->with('no-exists-book')
-                      ->will($this->throwException(new NoResultException()));
-
-        $this->client->getContainer()->set('book_model', $bookModelMock);
+        $bookModelMock
+            ->expects($this->once())
+            ->method('findBySlug')
+            ->with('no-exists-book')
+            ->will($this->throwException(new NoResultException()))
+        ;
 
         // Send the request
         $this->client->request('GET', '/show/no-exists-book');
 
+        $this->assertEquals(404, $this->client->getResponse()->getStatusCode());
         $this->assertTrue($this->client->getResponse()->isNotFound());
     }
 
-    public function testEmailSendMessageThrowsExceptionIfSenderParamsNotDefined()
+    /**
+     * @test
+     */
+    public function EmailSendMessage_throws_exception_if_sender_params_not_defined()
     {
-        $this->setExpectedException('\Bookkeeper\ApplicationBundle\Exception\ApplicationException');
+        $this->expectException(ApplicationException::class);
 
-        $containerMock = $this->getMockBuilder('appDevDebugProjectContainer')
+        $containerMock = $this
+            ->getMockBuilder('appDevDebugProjectContainer')
             ->setMethods(array('getParameter', 'get'))
-            ->getMock();
+            ->getMock()
+        ;
 
-        $containerMock->expects($this->any())
+        $containerMock
+            ->expects($this->once())
             ->method('getParameter')
-            ->will($this->returnValue(array())); // all email sender params not defined
+            ->will($this->returnValue([])) // all email sender params not defined
+        ;
 
-        $object             = new DefaultController();
-        $reflectionClass    = new \ReflectionClass($object);
+        $object = new DefaultController();
+        $reflectionClass = new \ReflectionClass($object);
         $reflectionProperty = $reflectionClass->getProperty('container');
         $reflectionProperty->setAccessible(true);
         $reflectionProperty->setValue($object, $containerMock);
 
-        $method = new \ReflectionMethod('Bookkeeper\ApplicationBundle\Controller\DefaultController', 'sendMessage');
+        $method = new \ReflectionMethod(DefaultController::class, 'sendMessage');
         $method->setAccessible(true);
         $method->invoke($object, 'subject test', 'message body', 'test@test.com');
     }
 
-    public function testEmailSendMessageThrowsExceptionIfSenderNameParamsNotDefined()
+    /**
+     * @test
+     */
+    public function EmailSendMessage_throws_exception_if_sender_name_params_not_defined()
     {
-        $this->setExpectedException('\Bookkeeper\ApplicationBundle\Exception\ApplicationException');
+        $this->expectException(ApplicationException::class);
 
         $containerMock = $this->getMockBuilder('appDevDebugProjectContainer')
             ->setMethods(array('getParameter', 'get'))
             ->getMock();
 
-        $containerMock->expects($this->any())
+        $containerMock
+            ->expects($this->any())
             ->method('getParameter')
-            ->will($this->returnValue(array('address' => 'foo@example.com'))); // email sender name param not defined
+            ->will($this->returnValue(array('address' => 'foo@example.com'))) // email sender name param not defined
+        ;
 
-        $object             = new DefaultController();
-        $reflectionClass    = new \ReflectionClass($object);
+        $object = new DefaultController();
+        $reflectionClass = new \ReflectionClass($object);
         $reflectionProperty = $reflectionClass->getProperty('container');
         $reflectionProperty->setAccessible(true);
         $reflectionProperty->setValue($object, $containerMock);
 
-        $method = new \ReflectionMethod('Bookkeeper\ApplicationBundle\Controller\DefaultController', 'sendMessage');
+        $method = new \ReflectionMethod(DefaultController::class, 'sendMessage');
         $method->setAccessible(true);
         $method->invoke($object, 'subject test', 'message body', 'test@test.com');
     }
 
-    public function testEmailSendMessageThrowsExceptionIfSenderAddressParamsNotDefined()
+    /**
+     * @test
+     */
+    public function EmailSendMessage_throws_xxception_if_sender_address_params_not_defined()
     {
-        $this->setExpectedException('\Bookkeeper\ApplicationBundle\Exception\ApplicationException');
+        $this->expectException(ApplicationException::class);
 
-        $containerMock = $this->getMockBuilder('appDevDebugProjectContainer')
+        $containerMock = $this
+            ->getMockBuilder('appDevDebugProjectContainer')
             ->setMethods(array('getParameter', 'get'))
-            ->getMock();
+            ->getMock()
+        ;
 
-        $containerMock->expects($this->any())
+        $containerMock
+            ->expects($this->any())
             ->method('getParameter')
-            ->will($this->returnValue(array('name' => 'foobar'))); // email sender address param not defined
+            ->will($this->returnValue(array('name' => 'foobar'))) // email sender address param not defined
+        ;
 
-        $object             = new DefaultController();
-        $reflectionClass    = new \ReflectionClass($object);
+        $object = new DefaultController();
+        $reflectionClass = new \ReflectionClass($object);
         $reflectionProperty = $reflectionClass->getProperty('container');
         $reflectionProperty->setAccessible(true);
         $reflectionProperty->setValue($object, $containerMock);
 
-        $method = new \ReflectionMethod('Bookkeeper\ApplicationBundle\Controller\DefaultController', 'sendMessage');
+        $method = new \ReflectionMethod(DefaultController::class, 'sendMessage');
         $method->setAccessible(true);
         $method->invoke($object, 'subject test', 'message body', 'test@test.com');
     }
