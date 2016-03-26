@@ -2,23 +2,29 @@
 
 namespace Bookkeeper\ApplicationBundle\Tests\Form;
 
-use Symfony\Component\Form\Test\TypeTestCase;
 use Bookkeeper\ApplicationBundle\Form\BookType;
 use Bookkeeper\ApplicationBundle\Entity\Book;
+use Symfony\Component\Form\Test\TypeTestCase;
 
 /**
  * Class BookTypeTest
  * @package Bookkeeper\ApplicationBundle\Tests\Form
+ *
+ * @SuppressWarnings(PHPMD.CamelCaseMethodName)
+ * @codingStandardsIgnoreFile
  */
 class BookTypeTest extends TypeTestCase
 {
-    public function testFormDataExchangeWithBookEntityObject()
+    /**
+     * @test
+     */
+    public function it_exchange_data_with_book_entity_object()
     {
-        $formData = array(
-            'title'       => 'Book title',
+        $formData = [
+            'title' => 'Book title',
             'description' => 'some description',
-            'pages'       => 550,
-        );
+            'pages' => 550,
+        ];
 
         $type = new BookType();
         $form = $this->factory->create($type);
@@ -32,7 +38,10 @@ class BookTypeTest extends TypeTestCase
         $this->assertEquals($object, $form->getData(), "Book form data and Book entity object are the same type");
     }
 
-    public function testFormHasAllDefinedElements()
+    /**
+     * @test
+     */
+    public function it_has_all_defined_elements()
     {
         $formElements = array('title', 'description', 'pages', 'submit');
 
@@ -47,7 +56,10 @@ class BookTypeTest extends TypeTestCase
         }
     }
 
-    public function testFormViewHasAllDefinedElements()
+    /**
+     * @test
+     */
+    public function view_has_all_defined_elements()
     {
         $formElements = array('title', 'description', 'pages', 'submit');
 
