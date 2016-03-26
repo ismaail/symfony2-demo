@@ -28,7 +28,7 @@ class AccessListener
     public function __construct($security, $router)
     {
         $this->security = $security;
-        $this->router   = $router;
+        $this->router = $router;
     }
 
     /**
@@ -37,14 +37,15 @@ class AccessListener
     public function onKernelRequest(GetResponseEvent $event)
     {
         if (null === $this->security->getToken()
-            || ! $this->security->isGranted('ROLE_PENDING')) {
+            || ! $this->security->isGranted('ROLE_PENDING')
+        ) {
             return;
         }
 
-        $skippedpaths = array(
+        $skippedpaths = [
             '/logout',
             '/user/activate',
-        );
+        ];
 
         if (in_array($this->router->getContext()->getPathInfo(), $skippedpaths)) {
             return;

@@ -2,9 +2,9 @@
 
 namespace Bookkeeper\ApplicationBundle\Controller;
 
+use Bookkeeper\ApplicationBundle\Exception\ApplicationException;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
-use Bookkeeper\ApplicationBundle\Exception\ApplicationException;
 use Bookkeeper\ApplicationBundle\Entity\Book;
 use Doctrine\ORM\NoResultException;
 
@@ -30,11 +30,12 @@ class DefaultController extends Controller
     {
         $booksParams = $this->container->getParameter('books');
 
-        $books = $this->getBookModel()->getBooks($request->query->get('page', 1), $booksParams['pagination']['limit']);
+        $books = $this->getBookModel()->getBooks(
+            $request->query->get('page', 1),
+            $booksParams['pagination']['limit']
+        );
 
-        return $this->render('BookkeeperApplicationBundle:Default:index.html.twig', array(
-            'books' => $books,
-        ));
+        return $this->render('BookkeeperApplicationBundle:Default:index.html.twig', compact('books'));
     }
 
     /**
@@ -49,10 +50,10 @@ class DefaultController extends Controller
         try {
             $book = $this->getBookModel()->findBySlug($slug);
 
-            return $this->render('BookkeeperApplicationBundle:Default:show.html.twig', array(
+            return $this->render('BookkeeperApplicationBundle:Default:show.html.twig', [
                 'book' => $book,
                 'form' => $this->createBookDeleteForm($book)->createView(),
-            ));
+            ]);
 
         } catch (NoResultException $e) {
             throw $this->createNotFoundException("Book not found");
@@ -66,11 +67,13 @@ class DefaultController extends Controller
      */
     protected function createBookDeleteForm(Book $book)
     {
-        $form = $this->createFormBuilder()
-            ->setAction($this->generateUrl('book_delete', array('slug' => $book->getSlug())))
+        $form = $this
+            ->createFormBuilder()
+            ->setAction($this->generateUrl('book_delete', ['slug' => $book->getSlug()]))
             ->setMethod('delete')
             ->add('submit', 'submit', array('label' => 'Delete'))
-            ->getForm();
+            ->getForm()
+        ;
 
         return $form;
     }
@@ -100,10 +103,12 @@ class DefaultController extends Controller
         $mailer  = $this->get('mailer');
         /** @var \Swift_Message $message */
         $message = $mailer->createMessage();
-        $message->setSubject($subject)
-                ->setFrom($emailParams['address'], $emailParams['name'])
-                ->setTo($to)
-                ->setBody($body, 'text/html');
+        $message
+            ->setSubject($subject)
+            ->setFrom($emailParams['address'], $emailParams['name'])
+            ->setTo($to)
+            ->setBody($body, 'text/html')
+        ;
 
         $mailer->send($message);
     }

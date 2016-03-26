@@ -30,10 +30,10 @@ class DefaultController extends Controller
         // Last username entered by the user
         $lastUserName = $authenticationUtils->getLastUsername();
 
-        return $this->render('BookkeeperUserBundle:Default:login.html.twig', array(
+        return $this->render('BookkeeperUserBundle:Default:login.html.twig', [
             'last_username' => $lastUserName,
-            'error'         => $error,
-        ));
+            'error' => $error,
+        ]);
     }
 
     /**

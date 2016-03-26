@@ -3,10 +3,10 @@
 namespace Bookkeeper\ManagerBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Bookkeeper\ApplicationBundle\Form\BookType;
+use Bookkeeper\ApplicationBundle\Entity\Book;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\ORM\NoResultException;
-use Bookkeeper\ApplicationBundle\Entity\Book;
-use Bookkeeper\ApplicationBundle\Form\BookType;
 
 /**
  * Class DefaultController
@@ -30,9 +30,9 @@ class BookController extends Controller
     {
         $form = $this->createBookTypeForm(new Book());
 
-        return $this->render('BookkeeperManagerBundle:Book:new.html.twig', array(
+        return $this->render('BookkeeperManagerBundle:Book:new.html.twig', [
             'form' => $form->createView(),
-        ));
+        ]);
     }
 
     /**
@@ -53,14 +53,15 @@ class BookController extends Controller
             $this->getBookModel()->create($book);
 
             $this->get('session')->getFlashBag()->add('success', 'Book has been created.');
-            return $this->redirectToRoute('book_show', array('slug' => $book->getSlug()));
+
+            return $this->redirectToRoute('book_show', ['slug' => $book->getSlug()]);
         }
 
         $this->get('session')->getFlashBag()->add('error', 'Error creating a new book');
 
-        return $this->render('BookkeeperManagerBundle:Book:new.html.twig', array(
+        return $this->render('BookkeeperManagerBundle:Book:new.html.twig', [
             'form' => $form->createView(),
-        ));
+        ]);
     }
 
     /**
@@ -76,10 +77,10 @@ class BookController extends Controller
             $book = $this->getBookModel()->findBySlug($slug);
             $form = $this->createBookTypeForm($book, false);
 
-            return $this->render('BookkeeperManagerBundle:Book:edit.html.twig', array(
+            return $this->render('BookkeeperManagerBundle:Book:edit.html.twig', [
                 'form' => $form->createView(),
                 'book' => $book,
-            ));
+            ]);
 
         } catch (NoResultException $e) {
             throw $this->createNotFoundException("Book not found");
@@ -108,15 +109,15 @@ class BookController extends Controller
                 $this->getBookModel()->update($book, $slug);
 
                 $this->get('session')->getFlashBag()->add('success', 'Book has been updated.');
-                return $this->redirectToRoute('book_show', array('slug' => $book->getSlug()));
+                return $this->redirectToRoute('book_show', ['slug' => $book->getSlug()]);
             }
 
             $this->get('session')->getFlashBag()->add('error', 'Error updating the book');
 
-            return $this->render('BookkeeperManagerBundle:Book:edit.html.twig', array(
+            return $this->render('BookkeeperManagerBundle:Book:edit.html.twig', [
                 'form' => $form->createView(),
                 'book' => $book,
-            ));
+            ]);
 
         } catch (NoResultException $e) {
             throw $this->createNotFoundException("Book not found");
@@ -145,7 +146,8 @@ class BookController extends Controller
             }
 
             $this->get('session')->getFlashBag()->add('error', 'Error deleting the book');
-            return $this->redirectToRoute('book_show', array('slug' => $book->getSlug()));
+
+            return $this->redirectToRoute('book_show', ['slug' => $book->getSlug()]);
 
         } catch (NoResultException $e) {
             throw $this->createNotFoundException("Book not found");
@@ -162,20 +164,20 @@ class BookController extends Controller
      */
     protected function createBookTypeForm(Book $book, $isCreationForm = true)
     {
-        $formOptions = array(
+        $formOptions = [
             'action'  => $isCreationForm
-                ? array('url' => 'book_create', 'params' => array())
-                : array('url' => 'book_update', 'params' => array('slug' => $book->getSlug())),
+                ? ['url' => 'book_create', 'params' => []]
+                : ['url' => 'book_update', 'params' => ['slug' => $book->getSlug()]],
             'method'  => $isCreationForm ? 'POST'   : 'PUT',
             'label'   => $isCreationForm ? 'Create' : 'Update',
-        );
+        ];
 
-        $form = $this->createForm(new BookType(), $book, array(
+        $form = $this->createForm(new BookType(), $book, [
             'action' => $this->generateUrl($formOptions['action']['url'], $formOptions['action']['params']),
             'method' => $formOptions['method'],
-        ));
+        ]);
 
-        $form->add('submit', 'submit', array('label' => $formOptions['label']));
+        $form->add('submit', 'submit', ['label' => $formOptions['label']]);
 
         return $form;
     }
@@ -187,11 +189,13 @@ class BookController extends Controller
      */
     protected function createBookDeleteForm(Book $book)
     {
-        $form = $this->createFormBuilder()
-            ->setAction($this->generateUrl('book_delete', array('slug' => $book->getSlug())))
+        $form = $this
+            ->createFormBuilder()
+            ->setAction($this->generateUrl('book_delete', ['slug' => $book->getSlug()]))
             ->setMethod('delete')
-            ->add('submit', 'submit', array('label' => 'Delete'))
-            ->getForm();
+            ->add('submit', 'submit', ['label' => 'Delete'])
+            ->getForm()
+        ;
 
         return $form;
     }

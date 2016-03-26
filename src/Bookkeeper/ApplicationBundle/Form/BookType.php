@@ -2,9 +2,10 @@
 
 namespace Bookkeeper\ApplicationBundle\Form;
 
-use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\Form\FormBuilderInterface;
+use Bookkeeper\ApplicationBundle\Entity\Book;
+use Symfony\Component\Form\AbstractType;
 
 /**
  * Class BookType
@@ -20,9 +21,11 @@ class BookType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder->add('title')
-                ->add('description')
-                ->add('pages');
+        $builder
+            ->add('title')
+            ->add('description')
+            ->add('pages')
+        ;
     }
 
     /**
@@ -30,9 +33,9 @@ class BookType extends AbstractType
      */
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
-        $resolver->setDefaults(array(
-            'data_class' => 'Bookkeeper\ApplicationBundle\Entity\Book',
-        ));
+        $resolver->setDefaults([
+            'data_class' => Book::class,
+        ]);
     }
 
     /**

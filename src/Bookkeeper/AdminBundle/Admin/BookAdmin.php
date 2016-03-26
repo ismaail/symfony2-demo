@@ -2,10 +2,10 @@
 
 namespace Bookkeeper\AdminBundle\Admin;
 
-use Sonata\AdminBundle\Admin\Admin;
-use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
+use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Form\FormMapper;
+use Sonata\AdminBundle\Admin\Admin;
 
 /**
  * Class BookAdmin
@@ -26,7 +26,7 @@ class BookAdmin extends Admin
     protected function configureFormFields(FormMapper $formMapper)
     {
         $formMapper
-            ->add('title', 'text', array('label' => 'Book Title'))
+            ->add('title', 'text', ['label' => 'Book Title'])
             ->add('description')
             ->add('pages')
         ;

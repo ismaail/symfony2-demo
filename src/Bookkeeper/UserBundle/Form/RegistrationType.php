@@ -22,12 +22,14 @@ class RegistrationType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder->add('username', 'text')
-                ->add('password', 'repeated', array(
-                    'type'            => 'password',
-                    'invalid_message' => 'Passwords do not match'
-                ))
-                ->add('email', 'email');
+        $builder
+            ->add('username', 'text')
+            ->add('password', 'repeated', [
+                'type' => 'password',
+                'invalid_message' => 'Passwords do not match'
+            ])
+            ->add('email', 'email')
+        ;
     }
 
     /**
@@ -35,9 +37,9 @@ class RegistrationType extends AbstractType
      */
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
-        $resolver->setDefaults(array(
+        $resolver->setDefaults([
             'data_class' => 'Bookkeeper\UserBundle\Entity\User',
-        ));
+        ]);
     }
 
     /**

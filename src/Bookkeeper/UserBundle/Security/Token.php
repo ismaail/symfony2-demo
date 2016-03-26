@@ -47,7 +47,7 @@ class Token
 
         for ($i = 0; $i < $length; $i++) {
             $randomKey = $this->getRandomInteger(0, $alphabetLength);
-            $token     .= $this->alphabet[$randomKey];
+            $token .= $this->alphabet[$randomKey];
         }
 
         return $token;

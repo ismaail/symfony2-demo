@@ -95,9 +95,11 @@ class Mailer
 
         /** @var \Swift_Message $message */
         $message = $mailer->createMessage();
-        $message->setSubject($subject)
-                ->setFrom($this->emailParams['address'], $this->emailParams['name'])
-                ->setTo($to);
+        $message
+            ->setSubject($subject)
+            ->setFrom($this->emailParams['address'], $this->emailParams['name'])
+            ->setTo($to)
+        ;
 
         if (null === $this->htmlBody && null === $this->textBody) {
             throw new ApplicationException("Message body not set");

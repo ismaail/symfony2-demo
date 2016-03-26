@@ -12,7 +12,6 @@ use Bookkeeper\UserBundle\Entity\User;
  */
 class UserModel
 {
-
     /**
      * @var Container
      */
@@ -59,7 +58,7 @@ class UserModel
         try {
             // Prepare user data
             $user->setPassword($user->hash($user->getPassword()));
-            $user->setRoles(array($user::ROLE_PENDING));
+            $user->setRoles([$user::ROLE_PENDING]);
             $user->setToken($this->generateToken());
 
             $em = $this->getEntityManager();
@@ -92,7 +91,7 @@ class UserModel
             $em = $this->getEntityManager();
             $em->beginTransaction();
 
-            $user->setRoles(array(User::ROLE_MEMBER));
+            $user->setRoles([User::ROLE_MEMBER]);
             $user->setToken(null);
 
             $em->flush();

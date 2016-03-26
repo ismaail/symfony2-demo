@@ -45,6 +45,7 @@ class UserController extends Controller
                 $this->sendActivationEmail($user);
 
                 $this->get('session')->getFlashBag()->add('success', 'Your account successfully created');
+
                 return $this->redirectToRoute('login');
 
             } else {
@@ -52,9 +53,9 @@ class UserController extends Controller
             }
         }
 
-        return $this->render('BookkeeperUserBundle:User:signup.html.twig', array(
+        return $this->render('BookkeeperUserBundle:User:signup.html.twig', [
             'form' => $form->createView(),
-        ));
+        ]);
     }
 
     /**
@@ -101,12 +102,12 @@ class UserController extends Controller
      */
     protected function createSignupTypeForm(Entity\User $user)
     {
-        $form = $this->createForm(new RegistrationType(), $user, array(
+        $form = $this->createForm(new RegistrationType(), $user, [
             'action' => $this->generateUrl('signup'),
             'method' => 'post',
-        ));
+        ]);
 
-        $form->add('submit', 'submit', array('label' => 'Sign-up'));
+        $form->add('submit', 'submit', ['label' => 'Sign-up']);
 
         return $form;
     }
@@ -147,7 +148,7 @@ class UserController extends Controller
 
         $mailer->setTextBody($this->renderView(
             'BookkeeperUserBundle:Email:activate_account.html.twig',
-            array('user' => $user)
+            ['user' => $user]
         ));
 
         $mailer->send($user->getEmail(), 'Bookkeeper.dev - Activate your account');
