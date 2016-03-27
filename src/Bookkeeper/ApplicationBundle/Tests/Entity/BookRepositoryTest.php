@@ -27,6 +27,11 @@ class BookRepositoryTest extends DoctrineTestCase
         $this->bookRepository = $this->getEntityManager()->getRepository('BookkeeperApplicationBundle:Book');
     }
 
+    /**
+     * Create & Persist Single Book Entity.
+     *
+     * @return Book
+     */
     private function createBook()
     {
         $book = new Book();

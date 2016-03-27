@@ -12,4 +12,4 @@ services:
             - [ setAnnotationReader, [ @annotation_reader ] ]
     cache:
         class: Doctrine\Common\Cache\FilesystemCache
-        arguments: [%kernel.cache_dir%]
+        arguments: [%kernel.cache_dir%/bookkeeper]

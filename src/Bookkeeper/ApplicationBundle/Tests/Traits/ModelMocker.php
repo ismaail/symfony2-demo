@@ -6,6 +6,7 @@ namespace Bookkeeper\ApplicationBundle\Tests\Traits;
  * Class ModelMocker
  * @package Bookkeeper\ApplicationBundle\Tests\Traits
  * @mixin \Symfony\Bundle\FrameworkBundle\Test\WebTestCase
+ * @property \Symfony\Bundle\FrameworkBundle\Client $client
  */
 trait ModelMocker
 {
