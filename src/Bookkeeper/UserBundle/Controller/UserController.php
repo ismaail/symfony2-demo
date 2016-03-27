@@ -103,7 +103,7 @@ class UserController extends Controller
      */
     protected function createSignupTypeForm(Entity\User $user)
     {
-        $form = $this->createForm(new RegistrationType(), $user, [
+        $form = $this->createForm(RegistrationType::class, $user, [
             'action' => $this->generateUrl('signup'),
             'method' => 'post',
         ]);
