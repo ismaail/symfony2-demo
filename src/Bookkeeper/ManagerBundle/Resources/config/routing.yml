@@ -1,24 +1,28 @@
 book_new:
     path:     /new
-    defaults: { _controller: BookkeeperManagerBundle:Book:new }
+    defaults: { _controller: "BookkeeperManagerBundle:Book:new" }
+    methods: [GET]
 
 book_create:
     path: /create
     defaults: { _controller: "BookkeeperManagerBundle:Book:create" }
-    requirements: { _method: post }
+    methods: [POST]
 
 book_edit:
     path: /edit/{slug}
     defaults: { _controller: "BookkeeperManagerBundle:Book:edit" }
+    methods: [GET]
     requirements: { slug: "[a-z-]+" }
 
 book_update:
     path: /update/{slug}
     defaults: { _controller: "BookkeeperManagerBundle:Book:update" }
-    requirements: { slug: "[a-z-]+", _method: put}
+    methods: [PUT]
+    requirements: { slug: "[a-z-]+" }
 
 book_delete:
     path: /delete/{slug}
     defaults: { _controller: "BookkeeperManagerBundle:Book:delete" }
-    requirements: { _method: delete, slug: "[a-z-]+" }
+    methods: [DELETE]
+    requirements: { slug: "[a-z-]+" }
 

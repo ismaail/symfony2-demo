@@ -1,6 +1,6 @@
 login:
     path:     /login
-    defaults: { _controller: BookkeeperUserBundle:Default:login }
+    defaults: { _controller: "BookkeeperUserBundle:Default:login" }
 
 login_check:
     path: /login_check
@@ -15,4 +15,4 @@ signup:
 account_activate:
     path: /user/activate
     defaults: { _controller: "BookkeeperUserBundle:User:activate" }
-    requirements: { _method: get }
+    methods: [GET]

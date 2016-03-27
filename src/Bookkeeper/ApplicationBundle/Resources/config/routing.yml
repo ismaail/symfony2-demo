@@ -1,8 +1,10 @@
 home:
     path:     /
-    defaults: { _controller: BookkeeperApplicationBundle:Default:index }
+    defaults: { _controller: "BookkeeperApplicationBundle:Default:index" }
+    methods: [GET]
 
 book_show:
     path:     /show/{slug}
     defaults: { _controller: "BookkeeperApplicationBundle:Default:show" }
+    methods: [GET]
     requirements: { slug: "[a-z-]+" }
