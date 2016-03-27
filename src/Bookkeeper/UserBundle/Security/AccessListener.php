@@ -12,22 +12,28 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 class AccessListener
 {
     /**
-     * @var \Symfony\Component\Security\Core\SecurityContext
+     * @var \Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage
      */
-    protected $security;
+    protected $tokenStorage;
 
     /**
      * @var \Symfony\Bundle\FrameworkBundle\Routing\Router
      */
     protected $router;
+    /**
+     * @var \Symfony\Component\Security\Core\Authorization\AuthorizationChecker
+     */
+    private $authorizationCecker;
 
     /**
-     * @param \Symfony\Component\Security\Core\SecurityContext $security
+     * @param \Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage $tokenStorage
+     * @param \Symfony\Component\Security\Core\Authorization\AuthorizationChecker $authorizationCecker
      * @param \Symfony\Bundle\FrameworkBundle\Routing\Router $router
      */
-    public function __construct($security, $router)
+    public function __construct($tokenStorage, $authorizationCecker, $router)
     {
-        $this->security = $security;
+        $this->tokenStorage = $tokenStorage;
+        $this->authorizationCecker = $authorizationCecker;
         $this->router = $router;
     }
 
@@ -36,8 +42,8 @@ class AccessListener
      */
     public function onKernelRequest(GetResponseEvent $event)
     {
-        if (null === $this->security->getToken()
-            || ! $this->security->isGranted('ROLE_PENDING')
+        if (null === $this->tokenStorage->getToken()
+            || ! $this->authorizationCecker->isGranted('ROLE_PENDING')
         ) {
             return;
         }
@@ -52,7 +58,7 @@ class AccessListener
         }
 
         // Redirect if role is "Pending"
-        if ($this->security->isGranted('ROLE_PENDING')) {
+        if ($this->authorizationCecker->isGranted('ROLE_PENDING')) {
             $url = $this->router->generate('account_activate');
             $event->setResponse(new RedirectResponse($url));
         }

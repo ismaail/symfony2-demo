@@ -71,7 +71,7 @@ class UserController extends Controller
 
         if (null !== $token) {
             /** @var Entity\User $user */
-            $user = $this->get('security.context')->getToken()->getUser();
+            $user = $this->get('security.token_storage')->getToken()->getUser();
 
             if ($token === $user->getToken()) {
                 // Activate user account
