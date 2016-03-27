@@ -2,7 +2,7 @@
 
 namespace Bookkeeper\ApplicationBundle\Form;
 
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\FormBuilderInterface;
 use Bookkeeper\ApplicationBundle\Entity\Book;
 use Symfony\Component\Form\AbstractType;
@@ -29,9 +29,9 @@ class BookType extends AbstractType
     }
 
     /**
-     * @param OptionsResolverInterface $resolver
+     * @param OptionsResolver $resolver
      */
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
             'data_class' => Book::class,
