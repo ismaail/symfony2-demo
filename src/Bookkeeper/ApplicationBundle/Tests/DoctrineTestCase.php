@@ -52,6 +52,9 @@ abstract class DoctrineTestCase extends WebTestCase
         $this->metadata = $this->getEntityManager()->getMetadataFactory()->getAllMetadata();
 
         $this->generateSchema();
+
+        // Clear EntityManager from previous tests data.
+        $this->getEntityManager()->clear();
     }
 
     /**
