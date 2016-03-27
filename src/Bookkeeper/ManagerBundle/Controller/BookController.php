@@ -172,7 +172,7 @@ class BookController extends Controller
             'label'   => $isCreationForm ? 'Create' : 'Update',
         ];
 
-        $form = $this->createForm(new BookType(), $book, [
+        $form = $this->createForm(BookType::class, $book, [
             'action' => $this->generateUrl($formOptions['action']['url'], $formOptions['action']['params']),
             'method' => $formOptions['method'],
         ]);
