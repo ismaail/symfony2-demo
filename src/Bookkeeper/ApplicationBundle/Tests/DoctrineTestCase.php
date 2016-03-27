@@ -74,6 +74,14 @@ abstract class DoctrineTestCase extends WebTestCase
     }
 
     /**
+     * @return \Symfony\Component\DependencyInjection\Container
+     */
+    public function getContainer()
+    {
+        return $this->container;
+    }
+
+    /**
      * Returns the doctrine orm entity manager
      *
      * @return \Doctrine\ORM\EntityManager
