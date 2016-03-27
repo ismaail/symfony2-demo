@@ -2,6 +2,7 @@
 
 namespace Bookkeeper\ManagerBundle\Controller;
 
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Bookkeeper\ApplicationBundle\Form\BookType;
 use Bookkeeper\ApplicationBundle\Entity\Book;
@@ -177,7 +178,7 @@ class BookController extends Controller
             'method' => $formOptions['method'],
         ]);
 
-        $form->add('submit', 'submit', ['label' => $formOptions['label']]);
+        $form->add('submit', SubmitType::class, ['label' => $formOptions['label']]);
 
         return $form;
     }
@@ -193,7 +194,7 @@ class BookController extends Controller
             ->createFormBuilder()
             ->setAction($this->generateUrl('book_delete', ['slug' => $book->getSlug()]))
             ->setMethod('delete')
-            ->add('submit', 'submit', ['label' => 'Delete'])
+            ->add('submit', SubmitType::class, ['label' => 'Delete'])
             ->getForm()
         ;
 

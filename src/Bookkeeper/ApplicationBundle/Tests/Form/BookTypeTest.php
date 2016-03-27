@@ -2,6 +2,7 @@
 
 namespace Bookkeeper\ApplicationBundle\Tests\Form;
 
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Bookkeeper\ApplicationBundle\Form\BookType;
 use Bookkeeper\ApplicationBundle\Entity\Book;
 use Symfony\Component\Form\Test\TypeTestCase;
@@ -49,7 +50,7 @@ class BookTypeTest extends TypeTestCase
         $form = $this->factory->create($type);
 
         // Add Submit button
-        $form->add('submit', 'submit');
+        $form->add('submit', SubmitType::class);
 
         foreach ($formElements as $element) {
             $this->assertTrue($form->has($element), sprintf("Book form don't have element '%s'", $element));
@@ -67,7 +68,7 @@ class BookTypeTest extends TypeTestCase
         $form = $this->factory->create($type);
 
         // Add Submit button
-        $form->add('submit', 'submit');
+        $form->add('submit', SubmitType::class);
 
         $view     = $form->createView();
         $children = $view->children;

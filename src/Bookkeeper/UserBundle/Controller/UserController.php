@@ -2,9 +2,10 @@
 
 namespace Bookkeeper\UserBundle\Controller;
 
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\HttpFoundation\Request;
 use Bookkeeper\UserBundle\Form\RegistrationType;
+use Symfony\Component\HttpFoundation\Request;
 use Bookkeeper\UserBundle\Entity;
 
 /**
@@ -107,7 +108,7 @@ class UserController extends Controller
             'method' => 'post',
         ]);
 
-        $form->add('submit', 'submit', ['label' => 'Sign-up']);
+        $form->add('submit', SubmitType::class, ['label' => 'Sign-up']);
 
         return $form;
     }

@@ -3,6 +3,7 @@
 namespace Bookkeeper\ApplicationBundle\Controller;
 
 use Bookkeeper\ApplicationBundle\Exception\ApplicationException;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Bookkeeper\ApplicationBundle\Entity\Book;
@@ -71,7 +72,7 @@ class DefaultController extends Controller
             ->createFormBuilder()
             ->setAction($this->generateUrl('book_delete', ['slug' => $book->getSlug()]))
             ->setMethod('delete')
-            ->add('submit', 'submit', array('label' => 'Delete'))
+            ->add('submit', SubmitType::class, array('label' => 'Delete'))
             ->getForm()
         ;
 
