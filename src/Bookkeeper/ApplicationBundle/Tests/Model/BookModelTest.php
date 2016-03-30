@@ -88,6 +88,21 @@ class BookModelTest extends DoctrineTestCase
     /**
      * @test
      */
+    public function pagination_returns_the_right_amount_of_books()
+    {
+        $this->createBook(['title' => 'Book 1']);
+
+        $this->assertCount(1, $this->bookModel->getBooks(1, 1), 'Book pagination did not returned single book.');
+
+        $this->createBook(['title' => 'Book 2']);
+
+        $this->assertCount(1, $this->bookModel->getBooks(2, 1), 'Book pagination did not returned single book.');
+        $this->assertCount(2, $this->bookModel->getBooks(1, 2), 'Book pagination did not returned 2 books.');
+    }
+
+    /**
+     * @test
+     */
     public function findBySlug_throws_exception_if_book_do_not_exist()
     {
         $this->expectException(NoResultException::class);
@@ -139,5 +154,55 @@ class BookModelTest extends DoctrineTestCase
         $this->assertCount(1, $books);
         $this->assertEquals($bookTitle, $books[0]->getTitle(), 'Wrong Book Title.');
 
+    }
+
+    /**
+     * @test
+     */
+    public function update_book()
+    {
+        $title = 'First Title';
+        $slug = 'first-title';
+        $newTitle = 'New Title';
+        $newSlug = 'new-title';
+
+        $this->createBook(['title' => $title]);
+
+        $book = $this->bookModel->findBySlug($slug);
+
+        // Assert First Book
+        $this->assertCount(1, $this->bookModel->getBooks(1, 10), 'Books list has not just 1 single Book.');
+        $this->assertInstanceOf(Book::class, $book);
+        $this->assertEquals($title, $book->getTitle());
+
+        // Update the Book
+        $book->setTitle($newTitle);
+        $this->bookModel->update($book, $slug);
+
+        $updatedBook = $this->bookModel->findBySlug($newSlug);
+
+        // Assert the updated Book
+        $this->assertCount(1, $this->bookModel->getBooks(1, 10), 'Books list has not just 1 single Book.');
+        $this->assertInstanceOf(Book::class, $updatedBook);
+        $this->assertEquals($newTitle, $updatedBook->getTitle());
+    }
+
+    /**
+     * @test
+     */
+    public function delete_book()
+    {
+        $this->assertCount(0, $this->bookModel->getBooks(1, 10), 'Books list has some books.');
+
+        $book = $this->createBook();
+
+        // Assert Single Book.
+        $this->assertCount(1, $this->bookModel->getBooks(1, 10), 'Books list has not just 1 single Book.');
+
+        // Delete the Book.
+        $this->bookModel->remove($book);
+
+        // Asset No books.
+        $this->assertCount(0, $this->bookModel->getBooks(1, 10), 'Books list has some books.');
     }
 }
