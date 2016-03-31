@@ -65,7 +65,7 @@ class Mailer
             throw new ApplicationException("Sender name is not defined");
         }
 
-        if (! isset($this->parameters['pretend'])) {
+        if (isset($this->parameters['pretend'])) {
             $this->pretend = $this->parameters['pretend'];
         }
     }

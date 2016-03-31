@@ -63,4 +63,39 @@ class MailerTest extends TestCase
         // sender email address param not defined.
         new Mailer(['name' => 'Jhon Doe'], $this->mockSwiftMailer());
     }
+
+    /**
+     * @test
+     */
+    public function pretend_param_initial_value_is_false()
+    {
+        $mailer = new Mailer([
+            'address' => 'jhon@example.com',
+            'name' => 'Jhone Doe',
+        ], $this->mockSwiftMailer());
+
+        $reflectedClass = new \ReflectionClass(Mailer::class);
+        $reflectedProperty = $reflectedClass->getProperty('pretend');
+        $reflectedProperty->setAccessible(true);
+
+        $this->assertFalse($reflectedProperty->getValue($mailer));
+    }
+
+    /**
+     * @test
+     */
+    public function pretend_param_is_updated()
+    {
+        $mailer = new Mailer([
+            'address' => 'jhon@example.com',
+            'name' => 'Jhone Doe',
+            'pretend' => true,
+        ], $this->mockSwiftMailer());
+
+        $reflectedClass = new \ReflectionClass(Mailer::class);
+        $reflectedProperty = $reflectedClass->getProperty('pretend');
+        $reflectedProperty->setAccessible(true);
+
+        $this->assertTrue($reflectedProperty->getValue($mailer));
+    }
 }
