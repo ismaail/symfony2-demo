@@ -166,12 +166,18 @@ class BookController extends Controller
     protected function createBookTypeForm(Book $book, $isCreationForm = true)
     {
         $formOptions = [
-            'action'  => $isCreationForm
-                ? ['url' => 'book_create', 'params' => []]
-                : ['url' => 'book_update', 'params' => ['slug' => $book->getSlug()]],
-            'method'  => $isCreationForm ? 'POST'   : 'PUT',
-            'label'   => $isCreationForm ? 'Create' : 'Update',
+            'action' => ['url' => 'book_create', 'params' => []],
+            'method' => 'POST',
+            'label' => 'Create',
         ];
+
+        if (! $isCreationForm) {
+            $formOptions = [
+                'action' => ['url' => 'book_update', 'params' => ['slug' => $book->getSlug()]],
+                'method' => 'PUT',
+                'label' => 'Update',
+            ];
+        }
 
         $form = $this->createForm(BookType::class, $book, [
             'action' => $this->generateUrl($formOptions['action']['url'], $formOptions['action']['params']),
