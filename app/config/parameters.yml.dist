@@ -22,6 +22,7 @@ parameters:
     email:
         name:          ~
         address:       ~
+        pretend:       false
 
     books:
         pagination:
