@@ -27,8 +27,7 @@ class BookTypeTest extends TypeTestCase
             'pages' => 550,
         ];
 
-        $type = new BookType();
-        $form = $this->factory->create($type);
+        $form = $this->factory->create(BookType::class);
 
         $object = new Book();
         $object->populate($formData);
@@ -46,8 +45,7 @@ class BookTypeTest extends TypeTestCase
     {
         $formElements = array('title', 'description', 'pages', 'submit');
 
-        $type = new BookType();
-        $form = $this->factory->create($type);
+        $form = $this->factory->create(BookType::class);
 
         // Add Submit button
         $form->add('submit', SubmitType::class);
@@ -64,8 +62,7 @@ class BookTypeTest extends TypeTestCase
     {
         $formElements = array('title', 'description', 'pages', 'submit');
 
-        $type = new BookType();
-        $form = $this->factory->create($type);
+        $form = $this->factory->create(BookType::class);
 
         // Add Submit button
         $form->add('submit', SubmitType::class);
