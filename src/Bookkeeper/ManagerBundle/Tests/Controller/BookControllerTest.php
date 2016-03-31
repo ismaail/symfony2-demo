@@ -2,19 +2,25 @@
 
 namespace Bookkeeper\ManagerBundle\Tests\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Symfony\Component\BrowserKit\Cookie;
-use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use Bookkeeper\ApplicationBundle\Entity\Book as EntityBook;
+use Bookkeeper\ApplicationBundle\Tests\Traits\ModelMocker;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Bookkeeper\UserBundle\Entity\User as EntityUser;
+use Bookkeeper\UserBundle\Tests\Traits\UserTrait;
 
 /**
  * Class BookControllerTest
  * @package Bookkeeper\ManagerBundle\Tests\Controller
+ *
+ * @SuppressWarnings(PHPMD.CamelCaseMethodName)
+ * @codingStandardsIgnoreFile
  */
 class BookControllerTest extends WebTestCase
 {
+    use UserTrait;
+    use ModelMocker;
+
     /**
      * @var \Symfony\Bundle\FrameworkBundle\Client
      */
@@ -25,7 +31,40 @@ class BookControllerTest extends WebTestCase
         $this->client = static::createClient();
     }
 
-    public function testNewActionIsAccessibleByRoleAdmin()
+    /**
+     * @param string $slug
+     */
+    private function mockBookModelGetBookBySlug($slug)
+    {
+        $bookModelMock = $this->getBookModelMock(['findBySlug', 'merge']);
+
+        $book = new EntityBook();
+        $bookReflectionClass = new \ReflectionClass($book);
+        $slugReflectionProperty = $bookReflectionClass->getProperty('slug');
+        $slugReflectionProperty->setAccessible(true);
+        $slugReflectionProperty->setValue($book, $slug);
+
+        $bookModelMock
+            ->expects($this->once())
+            ->method('findBySlug')
+            ->with('book-title')
+            ->will($this->returnValue($book))
+        ;
+
+        $bookModelMock
+            ->expects($this->any())
+            ->method('merge')
+            ->with($book)
+            ->will($this->returnValue($book))
+        ;
+    }
+
+    /**
+     * @test
+     * @group role_admin
+     * @group action_new
+     */
+    public function role_admin_can_access_New_action()
     {
         $this->logIn(EntityUser::ROLE_ADMIN);
 
@@ -34,7 +73,12 @@ class BookControllerTest extends WebTestCase
         $this->assertTrue($this->client->getResponse()->isSuccessful(), 'ROLE_ADMIN cannot access /new path');
     }
 
-    public function testNewActionNotAccessibleByRoleMember()
+    /**
+     * @test
+     * @group role_amember
+     * @group action_new
+     */
+    public function role_member_cannot_access_New_action()
     {
         $this->logIn(EntityUser::ROLE_MEMBER);
 
@@ -43,7 +87,12 @@ class BookControllerTest extends WebTestCase
         $this->assertTrue($this->client->getResponse()->isForbidden(), 'ROLE_MEMEBER can access /new path');
     }
 
-    public function testNewActionNotAccessibleByAnonymousUser()
+    /**
+     * @test
+     * @group role_anonymous
+     * @group action_new
+     */
+    public function role_anon_connot_access__New_action()
     {
         $this->client->request('GET', '/new');
 
@@ -53,7 +102,12 @@ class BookControllerTest extends WebTestCase
         $this->assertStringEndsWith('/login', $this->client->getHistory()->current()->getUri());
     }
 
-    public function testCreateActionIsAccessibleByRoleAdmin()
+    /**
+     * @test
+     * @group role_admin
+     * @group action_create
+     */
+    public function role_admin_can_access_Create_action()
     {
         $this->logIn(EntityUser::ROLE_ADMIN);
 
@@ -62,7 +116,12 @@ class BookControllerTest extends WebTestCase
         $this->assertTrue($this->client->getResponse()->isSuccessful(), 'ROLE_ADMIN cannot access /create path');
     }
 
-    public function testCreateActionNotAccessibleByRoleMember()
+    /**
+     * @test
+     * @group role_member
+     * @group action_create
+     */
+    public function role_member_cannot_access_Create_action()
     {
         $this->logIn(EntityUser::ROLE_MEMBER);
 
@@ -71,7 +130,12 @@ class BookControllerTest extends WebTestCase
         $this->assertTrue($this->client->getResponse()->isForbidden(), 'ROLE_MEMEBER can access /create path');
     }
 
-    public function testCreateActionNotAccessibleByAnonymousUser()
+    /**
+     * @test
+     * @group role_anonymous
+     * @group action_create
+     */
+    public function role_anon_cannot_access__Create_action()
     {
         $this->client->request('POST', '/create');
 
@@ -81,7 +145,12 @@ class BookControllerTest extends WebTestCase
         $this->assertStringEndsWith('/login', $this->client->getHistory()->current()->getUri());
     }
 
-    public function testEditActionIsAccessibleByRoleAdmin()
+    /**
+     * @test
+     * @group role_admin
+     * @group action_edit
+     */
+    public function role_admin_can_access_Edit_action()
     {
         $this->logIn(EntityUser::ROLE_ADMIN);
         $this->mockBookModelGetBookBySlug('book-title');
@@ -91,7 +160,12 @@ class BookControllerTest extends WebTestCase
         $this->assertTrue($this->client->getResponse()->isSuccessful(), 'ROLE_ADMIN cannot access /edit path');
     }
 
-    public function testEditActionNotAccessibleByRoleMember()
+    /**
+     * @test
+     * @group role_member
+     * @group action_edit
+     */
+    public function role_member_cannot_access_Edit_action()
     {
         $this->logIn(EntityUser::ROLE_MEMBER);
 
@@ -100,7 +174,12 @@ class BookControllerTest extends WebTestCase
         $this->assertTrue($this->client->getResponse()->isForbidden(), 'ROLE_MEMEBER can access /edit path');
     }
 
-    public function testEditActionNotAccessibleByAnonymousUser()
+    /**
+     * @test
+     * @group role_anonymous
+     * @group action_edit
+     */
+    public function role_anon_cannot_access_Edit_action()
     {
         $this->client->request('GET', '/edit/book-title');
 
@@ -110,7 +189,12 @@ class BookControllerTest extends WebTestCase
         $this->assertStringEndsWith('/login', $this->client->getHistory()->current()->getUri());
     }
 
-    public function testUpdateActionIsAccessibleByRoleAdmin()
+    /**
+     * @test
+     * @group role_admin
+     * @group action_update
+     */
+    public function role_admin_can_access_Update_action()
     {
         $this->logIn(EntityUser::ROLE_ADMIN);
         $this->mockBookModelGetBookBySlug('book-title');
@@ -120,7 +204,12 @@ class BookControllerTest extends WebTestCase
         $this->assertTrue($this->client->getResponse()->isSuccessful(), 'ROLE_ADMIN cannot access /update path');
     }
 
-    public function testUpdateActionNotAccessibleByRoleMember()
+    /**
+     * @test
+     * @group role_member
+     * @group action_update
+     */
+    public function role_member_cannot_access_Update_action()
     {
         $this->logIn(EntityUser::ROLE_MEMBER);
 
@@ -129,7 +218,12 @@ class BookControllerTest extends WebTestCase
         $this->assertTrue($this->client->getResponse()->isForbidden(), 'ROLE_MEMEBER can access /update path');
     }
 
-    public function testUpdateActionNotAccessibleByAnonymousUser()
+    /**
+     * @test
+     * @group role_anonymous
+     * @group action_update
+     */
+    public function anon_role_cannot_access_Update_action()
     {
         $this->client->request('PUT', '/update/book-title');
 
@@ -139,7 +233,12 @@ class BookControllerTest extends WebTestCase
         $this->assertStringEndsWith('/login', $this->client->getHistory()->current()->getUri());
     }
 
-    public function testDeleteActionIsAccessibleByRoleAdmin()
+    /**
+     * @test
+     * @group role_admin
+     * @group action_delete
+     */
+    public function role_admin_can_access_Delete_action()
     {
         $this->logIn(EntityUser::ROLE_ADMIN);
         $this->mockBookModelGetBookBySlug('book-title');
@@ -150,7 +249,12 @@ class BookControllerTest extends WebTestCase
         $this->assertTrue($this->client->getResponse() instanceof RedirectResponse);
     }
 
-    public function testDeleteActionNotAccessibleByRoleMember()
+    /**
+     * @test
+     * @group role_member
+     * @group action_delete
+     */
+    public function role_member_cannot_access_Delete_action()
     {
         $this->logIn(EntityUser::ROLE_MEMBER);
 
@@ -159,7 +263,12 @@ class BookControllerTest extends WebTestCase
         $this->assertTrue($this->client->getResponse()->isForbidden(), 'ROLE_MEMEBER can access /delete path');
     }
 
-    public function testDeleteActionNotAccessibleByAnonymousUser()
+    /**
+     * @test
+     * @group role_anonymous
+     * @group action_delete
+     */
+    public function role_anon_cannot_access_Delete_action()
     {
         $this->client->request('DELETE', '/delete/book-title');
 
@@ -167,106 +276,5 @@ class BookControllerTest extends WebTestCase
 
         $this->client->followRedirect();
         $this->assertStringEndsWith('/login', $this->client->getHistory()->current()->getUri());
-    }
-
-    /**
-     * @param string $role
-     *
-     * @return \PHPUnit_Framework_MockObject_MockObject
-     */
-    public function mockBookkeeperEntityUser($role)
-    {
-        $mockUser = $this
-            ->getMockBuilder('\Bookkeeper\UserBundle\Entity\User')
-            ->disableOriginalConstructor()
-            ->setMethods(array('serialize'))
-            ->getMock();
-
-        $mockUser
-            ->expects($this->atLeastOnce())
-            ->method('serialize')
-            ->will($this->returnValue(sprintf('a:3:{i:0;i:1;i:1;s:4:"user";i:2;s:%d:"%s";}', strlen($role), $role)));
-
-        $reflectionClass = new \ReflectionClass('\Bookkeeper\UserBundle\Entity\User');
-        // id property
-        $reflectionIdProperty = $reflectionClass->getProperty('id');
-        $reflectionIdProperty->setAccessible(true);
-        $reflectionIdProperty->setValue($mockUser, 1);
-        // username property
-        $reflectionUsernameProperty = $reflectionClass->getProperty('username');
-        $reflectionUsernameProperty->setAccessible(true);
-        $reflectionUsernameProperty->setValue($mockUser, 'user');
-        // roles property
-        $reflectionRolesProperty = $reflectionClass->getProperty('roles');
-        $reflectionRolesProperty->setAccessible(true);
-        $reflectionRolesProperty->setValue($mockUser, $role);
-
-        return $mockUser;
-    }
-
-    public function mockEntityUserProvider($mockUser)
-    {
-        $mockEntityUserProvider = $this
-            ->getMockBuilder('\Symfony\Bridge\Doctrine\Security\User\EntityUserProvider')
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $mockEntityUserProvider
-            ->expects($this->any())
-            ->method('refreshUser')
-            ->will($this->returnValue($mockUser));
-
-        $this->client->getContainer()->set('security.user.provider.concrete.administrators', $mockEntityUserProvider);
-    }
-
-    /**
-     * @param string $role
-     *
-     * Mock loggedIn user with role
-     */
-    private function logIn($role)
-    {
-        $user = $this->mockBookkeeperEntityUser($role);
-        $this->mockEntityUserProvider($user);
-
-        /** @var \Symfony\Component\HttpFoundation\Session\Session $session */
-        $session = $this->client->getContainer()->get('session');
-
-        $firewall = 'secured_area';
-        $token    = new UsernamePasswordToken($user, null, $firewall, array($role));
-        $session->set('_security_' . $firewall, serialize($token));
-        $session->save();
-
-        $cookie = new Cookie($session->getName(), $session->getId());
-        $this->client->getCookieJar()->set($cookie);
-    }
-
-    /**
-     * @param string $slug
-     */
-    private function mockBookModelGetBookBySlug($slug)
-    {
-        $bookModelMock = $this->getMockBuilder('Bookkeeper\ApplicationBundle\Model\BookModel')
-            ->setMethods(array('getBooks', 'findBySlug', 'merge'))
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $book                   = new EntityBook();
-        $bookReflectionClass    = new \ReflectionClass($book);
-        $slugReflectionProperty = $bookReflectionClass->getProperty('slug');
-        $slugReflectionProperty->setAccessible(true);
-        $slugReflectionProperty->setValue($book, $slug);
-
-        $bookModelMock->expects($this->once())
-            ->method('findBySlug')
-            ->with('book-title')
-            ->will($this->returnValue($book));
-
-        $bookModelMock->expects($this->any())
-            ->method('merge')
-            ->with($book)
-            ->will($this->returnValue($book));
-
-        $this->client->getContainer()->set('book_model', $bookModelMock);
     }
 }
