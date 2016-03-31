@@ -23,7 +23,7 @@ security:
                 path: /logout
                 target: /login
             remember_me:
-                key: "%secret%"
+                secret: "%secret%"
                 lifetime: 604800 # 1 week in seconds
                 path: /
 
