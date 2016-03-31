@@ -2,8 +2,6 @@
 
 namespace Bookkeeper\ApplicationBundle\Tests\Controller;
 
-use Bookkeeper\ApplicationBundle\Exception\ApplicationException;
-use Bookkeeper\ApplicationBundle\Controller\DefaultController;
 use Bookkeeper\ApplicationBundle\Entity\Book as EntityBook;
 use Bookkeeper\ApplicationBundle\Tests\Traits\ModelMocker;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -110,93 +108,5 @@ class DefaultControllerTest extends WebTestCase
 
         $this->assertEquals(404, $this->client->getResponse()->getStatusCode());
         $this->assertTrue($this->client->getResponse()->isNotFound());
-    }
-
-    /**
-     * @test
-     */
-    public function EmailSendMessage_throws_exception_if_sender_params_not_defined()
-    {
-        $this->expectException(ApplicationException::class);
-
-        $containerMock = $this
-            ->getMockBuilder('appDevDebugProjectContainer')
-            ->setMethods(array('getParameter', 'get'))
-            ->getMock()
-        ;
-
-        $containerMock
-            ->expects($this->once())
-            ->method('getParameter')
-            ->will($this->returnValue([])) // all email sender params not defined
-        ;
-
-        $object = new DefaultController();
-        $reflectionClass = new \ReflectionClass($object);
-        $reflectionProperty = $reflectionClass->getProperty('container');
-        $reflectionProperty->setAccessible(true);
-        $reflectionProperty->setValue($object, $containerMock);
-
-        $method = new \ReflectionMethod(DefaultController::class, 'sendMessage');
-        $method->setAccessible(true);
-        $method->invoke($object, 'subject test', 'message body', 'test@test.com');
-    }
-
-    /**
-     * @test
-     */
-    public function EmailSendMessage_throws_exception_if_sender_name_params_not_defined()
-    {
-        $this->expectException(ApplicationException::class);
-
-        $containerMock = $this->getMockBuilder('appDevDebugProjectContainer')
-            ->setMethods(array('getParameter', 'get'))
-            ->getMock();
-
-        $containerMock
-            ->expects($this->any())
-            ->method('getParameter')
-            ->will($this->returnValue(array('address' => 'foo@example.com'))) // email sender name param not defined
-        ;
-
-        $object = new DefaultController();
-        $reflectionClass = new \ReflectionClass($object);
-        $reflectionProperty = $reflectionClass->getProperty('container');
-        $reflectionProperty->setAccessible(true);
-        $reflectionProperty->setValue($object, $containerMock);
-
-        $method = new \ReflectionMethod(DefaultController::class, 'sendMessage');
-        $method->setAccessible(true);
-        $method->invoke($object, 'subject test', 'message body', 'test@test.com');
-    }
-
-    /**
-     * @test
-     */
-    public function EmailSendMessage_throws_xxception_if_sender_address_params_not_defined()
-    {
-        $this->expectException(ApplicationException::class);
-
-        $containerMock = $this
-            ->getMockBuilder('appDevDebugProjectContainer')
-            ->setMethods(array('getParameter', 'get'))
-            ->getMock()
-        ;
-
-        $containerMock
-            ->expects($this->any())
-            ->method('getParameter')
-            ->will($this->returnValue(array('name' => 'foobar'))) // email sender address param not defined
-        ;
-
-        $object = new DefaultController();
-        $reflectionClass = new \ReflectionClass($object);
-        $reflectionProperty = $reflectionClass->getProperty('container');
-        $reflectionProperty->setAccessible(true);
-        $reflectionProperty->setValue($object, $containerMock);
-
-        $method = new \ReflectionMethod(DefaultController::class, 'sendMessage');
-        $method->setAccessible(true);
-        $method->invoke($object, 'subject test', 'message body', 'test@test.com');
     }
 }

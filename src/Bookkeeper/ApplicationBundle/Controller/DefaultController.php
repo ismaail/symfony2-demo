@@ -80,41 +80,6 @@ class DefaultController extends Controller
     }
 
     /**
-     * Send email message
-     *
-     * @param string $subject
-     * @param string $body
-     * @param string $to
-     *
-     * @throws ApplicationException
-     */
-    protected function sendMessage($subject, $body, $to)
-    {
-        $emailParams = $this->container->getParameter('email');
-
-        if (! isset($emailParams['address'])) {
-            throw new ApplicationException("Email sender address param no defined");
-        }
-
-        if (! isset($emailParams['name'])) {
-            throw new ApplicationException("Email sender name param no defined");
-        }
-
-        /** @var \Swift_Mailer $mailer */
-        $mailer  = $this->get('mailer');
-        /** @var \Swift_Message $message */
-        $message = $mailer->createMessage();
-        $message
-            ->setSubject($subject)
-            ->setFrom($emailParams['address'], $emailParams['name'])
-            ->setTo($to)
-            ->setBody($body, 'text/html')
-        ;
-
-        $mailer->send($message);
-    }
-
-    /**
      * Get book model
      *
      * @return \Bookkeeper\ApplicationBundle\Model\BookModel
