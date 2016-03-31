@@ -39,6 +39,11 @@ class Mailer
     private $mailer;
 
     /**
+     * @var \Swift_Message
+     */
+    private $message;
+
+    /**
      * @param array $parameters
      * @param Swift_Mailer $mailer
      */
@@ -48,6 +53,8 @@ class Mailer
         $this->mailer = $mailer;
 
         $this->checkEmailParams();
+
+        $this->message = $this->mailer->createMessage();
     }
 
     /**
@@ -104,40 +111,38 @@ class Mailer
      */
     public function send($to, $subject)
     {
-        /** @var \Swift_Message $message */
-        $message = $this->mailer->createMessage();
-        $message
+        $this->message
             ->setSubject($subject)
             ->setFrom($this->parameters['address'], $this->parameters['name'])
             ->setTo($to)
         ;
 
-        $this->setMessageParts($message);
+        $this->setMessageParts();
 
         if ($this->pretend) {
-            return;
+            return false;
         }
 
-        $this->mailer->send($message);
+        return $this->mailer->send($this->message);
     }
 
     /**
-     * @param \Swift_Message $message
+     * Set Message body parts.
      *
      * @throws ApplicationException
      */
-    private function setMessageParts($message)
+    private function setMessageParts()
     {
         if (null === $this->htmlBody && null === $this->textBody) {
-            throw new ApplicationException("Message body not set");
+            throw new ApplicationException("Message body not set.");
         }
 
         if (null !== $this->htmlBody) {
-            $message->addPart($this->htmlBody, 'text/html');
+            $this->message->addPart($this->htmlBody, 'text/html');
         }
 
         if (null !== $this->textBody) {
-            $message->addPart($this->textBody, 'text/plain');
+            $this->message->addPart($this->textBody, 'text/plain');
         }
     }
 }

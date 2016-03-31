@@ -15,14 +15,16 @@ use PHPUnit_Framework_TestCase as TestCase;
 class MailerTest extends TestCase
 {
     /**
+     * @param array $methods
+     *
      * @return \PHPUnit_Framework_MockObject_MockObject|\Swift_Mailer
      */
-    public function mockSwiftMailer()
+    public function mockSwiftMailer($methods = [])
     {
         $mock = $this
             ->getMockBuilder(\Swift_Mailer::class)
             ->disableOriginalConstructor()
-            ->setMethods([])
+            ->setMethods($methods)
             ->getMock()
         ;
 
@@ -97,5 +99,122 @@ class MailerTest extends TestCase
         $reflectedProperty->setAccessible(true);
 
         $this->assertTrue($reflectedProperty->getValue($mailer));
+    }
+
+    /**
+     * @test
+     */
+    public function it_returns_false_if_pretend_id_true()
+    {
+        $swiftMailerMock = $this->mockSwiftMailer(['createMessage', 'send']);
+
+        $swiftMailerMock
+            ->expects($this->once())
+            ->method('createMessage')
+            ->will($this->returnValue(new \Swift_Message()))
+        ;
+
+        $swiftMailerMock
+            ->expects($this->never())
+            ->method('send')
+        ;
+
+        $mailer = new Mailer([
+            'address' => 'jhon@example.com',
+            'name' => 'Jhone Doe',
+            'pretend' => true,
+        ], $swiftMailerMock);
+
+        $mailer->setHtmlBody('<div>html body sample</div>');
+
+        $response = $mailer->send('test@example.com', 'Test Subject');
+
+        $this->assertFalse($response);
+    }
+
+    /**
+     * @test
+     */
+    public function it_throws_if_message_part_is_not_set()
+    {
+        $this->expectException(ApplicationException::class);
+
+        $swiftMailerMock = $this->mockSwiftMailer(['createMessage']);
+
+        $swiftMailerMock
+            ->expects($this->once())
+            ->method('createMessage')
+            ->will($this->returnValue(new \Swift_Message()))
+        ;
+
+        $mailer = new Mailer([
+            'address' => 'jhon@example.com',
+            'name' => 'Jhone Doe',
+            'pretend' => true,
+        ], $swiftMailerMock);
+
+        $mailer->send('test@example.com', 'Test Subject');
+    }
+
+    /**
+     * @test
+     */
+    public function it_sends_message_with_html_body()
+    {
+        $swiftMailerMock = $this->mockSwiftMailer(['createMessage', 'send']);
+
+        $swiftMailerMock
+            ->expects($this->once())
+            ->method('createMessage')
+            ->will($this->returnValue(new \Swift_Message()))
+        ;
+
+        $swiftMailerMock
+            ->expects($this->once())
+            ->method('send')
+            ->willReturn('Message sent')
+        ;
+
+        $mailer = new Mailer([
+            'address' => 'jhon@example.com',
+            'name' => 'Jhone Doe',
+        ], $swiftMailerMock);
+
+        $mailer->setHtmlBody('<div>html body sample</div>');
+
+        $response = $mailer->send('test@example.com', 'Test Subject');
+
+        $this->assertEquals('Message sent', $response);
+    }
+
+    /**
+     * @test
+     */
+    public function it_sends_message_with_text_body()
+    {
+        $swiftMailerMock = $this->mockSwiftMailer(['createMessage', 'send']);
+
+        $swiftMailerMock
+            ->expects($this->once())
+            ->method('createMessage')
+            ->will($this->returnValue(new \Swift_Message()))
+        ;
+
+        $swiftMailerMock
+            ->expects($this->once())
+            ->method('send')
+            ->willReturn('Message sent')
+        ;
+
+        $mailer = new Mailer([
+            'address' => 'jhon@example.com',
+            'name' => 'Jhone Doe',
+        ], $swiftMailerMock);
+
+        $mailer->setTextBody('text body sample');
+
+        $response = $mailer->send('test@example.com', 'Test Subject');
+
+        $this->assertEquals('Message sent', $response);
     }
 }
