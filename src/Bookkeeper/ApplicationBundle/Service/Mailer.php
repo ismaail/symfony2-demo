@@ -2,8 +2,8 @@
 
 namespace Bookkeeper\ApplicationBundle\Service;
 
-use Symfony\Component\DependencyInjection\ContainerInterface as Container;
 use Bookkeeper\ApplicationBundle\Exception\ApplicationException;
+use Swift_Mailer;
 
 /**
  * Class Mailer
@@ -11,11 +11,6 @@ use Bookkeeper\ApplicationBundle\Exception\ApplicationException;
  */
 class Mailer
 {
-    /**
-     * @var Container
-     */
-    private $container;
-
     /**
      * @var array
      */
@@ -29,13 +24,30 @@ class Mailer
     /**#@-*/
 
     /**
-     * @param Container $container
+     * @var bool
      */
-    public function __construct(Container $container)
-    {
-        $this->container = $container;
+    private $pretend = false;
 
-        $this->prepareEmailParams();
+    /**
+     * @var array
+     */
+    private $parameters;
+
+    /**
+     * @var Swift_Mailer
+     */
+    private $mailer;
+
+    /**
+     * @param array $parameters
+     * @param Swift_Mailer $mailer
+     */
+    public function __construct(array $parameters, Swift_Mailer $mailer)
+    {
+        $this->parameters = $parameters;
+        $this->mailer = $mailer;
+
+        $this->checkEmailParams();
     }
 
     /**
@@ -43,16 +55,18 @@ class Mailer
      *
      * @throws ApplicationException
      */
-    protected function prepareEmailParams()
+    protected function checkEmailParams()
     {
-        $this->emailParams = $this->container->getParameter('email');
-
-        if (! isset($this->emailParams['address'])) {
-            throw new ApplicationException("Email sender address param no defined");
+        if (! isset($this->parameters['address'])) {
+            throw new ApplicationException("Sender email address is not defined");
         }
 
-        if (! isset($this->emailParams['name'])) {
-            throw new ApplicationException("Email sender name param no defined");
+        if (! isset($this->parameters['name'])) {
+            throw new ApplicationException("Sender name is not defined");
+        }
+
+        if (! isset($this->parameters['pretend'])) {
+            $this->pretend = $this->parameters['pretend'];
         }
     }
 
@@ -90,17 +104,30 @@ class Mailer
      */
     public function send($to, $subject)
     {
-        /** @var \Swift_Mailer $mailer */
-        $mailer  = $this->container->get('mailer');
-
         /** @var \Swift_Message $message */
-        $message = $mailer->createMessage();
+        $message = $this->mailer->createMessage();
         $message
             ->setSubject($subject)
-            ->setFrom($this->emailParams['address'], $this->emailParams['name'])
+            ->setFrom($this->parameters['address'], $this->parameters['name'])
             ->setTo($to)
         ;
 
+        $this->setMessageParts($message);
+
+        if ($this->pretend) {
+            return;
+        }
+
+        $this->mailer->send($message);
+    }
+
+    /**
+     * @param \Swift_Message $message
+     *
+     * @throws ApplicationException
+     */
+    private function setMessageParts($message)
+    {
         if (null === $this->htmlBody && null === $this->textBody) {
             throw new ApplicationException("Message body not set");
         }
@@ -112,7 +139,5 @@ class Mailer
         if (null !== $this->textBody) {
             $message->addPart($this->textBody, 'text/plain');
         }
-
-        $mailer->send($message);
     }
 }

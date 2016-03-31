@@ -6,4 +6,4 @@ services:
 
     app_mailer:
         class: Bookkeeper\ApplicationBundle\Service\Mailer
-        arguments: ['@service_container']
+        arguments: ['%email%', '@mailer']
