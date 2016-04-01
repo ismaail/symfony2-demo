@@ -3,6 +3,7 @@
 namespace Bookkeeper\ManagerBundle\Tests\Controller;
 
 use Bookkeeper\ApplicationBundle\Entity\Book as EntityBook;
+use Bookkeeper\ApplicationBundle\Tests\DoctrineTestCase;
 use Bookkeeper\ApplicationBundle\Tests\Traits\ModelMocker;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -16,7 +17,7 @@ use Bookkeeper\UserBundle\Tests\Traits\UserTrait;
  * @SuppressWarnings(PHPMD.CamelCaseMethodName)
  * @codingStandardsIgnoreFile
  */
-class BookControllerTest extends WebTestCase
+class BookControllerTest extends DoctrineTestCase
 {
     use UserTrait;
     use ModelMocker;
@@ -24,12 +25,31 @@ class BookControllerTest extends WebTestCase
     /**
      * @var \Symfony\Bundle\FrameworkBundle\Client
      */
-    private $client;
+    protected $client;
 
-    public function setUp()
+    /**
+     * @var \Bookkeeper\ApplicationBundle\Entity\BookRepository
+     */
+    private $bookRepository;
+
+    protected function setUp()
     {
         $this->client = static::createClient();
+
+        parent::setUp();
+
+        $this->bookRepository = $this->getEntityManager()->getRepository('BookkeeperApplicationBundle:Book');
     }
+
+    /*
+     |---------------------------------------------------------
+     | Test Access to Controller paths.
+     |---------------------------------------------------------
+     |
+     | Test authorization access to action paths of the controller
+     | for ROLE_ADMIN, ROLE_MEMBER and ROLE_ANONYMOUS roles.
+     |
+     */
 
     /**
      * @param string $slug
@@ -276,5 +296,54 @@ class BookControllerTest extends WebTestCase
 
         $this->client->followRedirect();
         $this->assertStringEndsWith('/login', $this->client->getHistory()->current()->getUri());
+    }
+
+    /*
+     |---------------------------------------------------------
+     | Test data manipulation by controller actions.
+     |---------------------------------------------------------
+     */
+
+    /**
+     * @test
+     * @group action_create
+     */
+    public function it_create_new_Book_for_valide_input_data()
+    {
+        $input = [
+            'application_book' => [
+                'title' => 'Valide Book Title',
+                'description' => 'Book Short Description',
+                'pages' => 1,
+                '_token' => $this->client->getContainer()->get('security.csrf.token_manager')->getToken('application_book')->getValue(),
+            ]
+        ];
+
+        $slug = 'valide-book-title';
+
+        // Assert Book table is empty.
+        $this->assertCount(0, $this->bookRepository->findAll());
+
+        $this->logIn(EntityUser::ROLE_ADMIN);
+
+        $this->client->request('POST', '/create', $input);
+
+        // Asset Book table has 1 book.
+        $this->assertCount(1, $this->bookRepository->findAll());
+
+        // Assert Book table has the created book
+        $book = $this->bookRepository->findBySlug($slug);
+        $this->assertInstanceOf(EntityBook::class, $book);
+        $this->assertEquals($input['application_book']['title'], $book->getTitle());
+        $this->assertEquals($input['application_book']['description'], $book->getDescription());
+        $this->assertEquals($input['application_book']['pages'], $book->getPages());
+
+        $this->client->followRedirect();
+
+        // Asset correct url redirect.
+        $this->assertSame(
+            'http://localhost/show/' . $slug,
+            $this->client->getHistory()->current()->getUri()
+        );
     }
 }
