@@ -18,6 +18,11 @@ abstract class DoctrineTestCase extends WebTestCase
     protected $container;
 
     /**
+     * @var \Symfony\Bundle\FrameworkBundle\Client
+     */
+    protected $client;
+
+    /**
      * @var array
      */
     private $metadata;
@@ -78,6 +83,10 @@ abstract class DoctrineTestCase extends WebTestCase
      */
     public function getContainer()
     {
+        if (null !== $this->client) {
+            return $this->client->getContainer();
+        }
+
         return $this->container;
     }
 
@@ -88,7 +97,7 @@ abstract class DoctrineTestCase extends WebTestCase
      */
     protected function getEntityManager()
     {
-        return $this->container->get('doctrine.orm.entity_manager');
+        return $this->getContainer()->get('doctrine.orm.entity_manager');
     }
 
     /**
