@@ -2,6 +2,7 @@
 
 namespace Bookkeeper\ApplicationBundle\Tests\Model;
 
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Bookkeeper\ApplicationBundle\Tests\Traits\ServiceMocker;
 use Bookkeeper\ApplicationBundle\Tests\DoctrineTestCase;
 use Bookkeeper\ApplicationBundle\Model\BookModel;
@@ -112,7 +113,6 @@ class BookModelTest extends DoctrineTestCase
 
     /**
      * @test
-     * @group fail
      */
     public function findBySlug_returns_found_book()
     {
@@ -122,6 +122,33 @@ class BookModelTest extends DoctrineTestCase
         $this->createBook(['title' => $bookTitle]);
 
         $book = $this->bookModel->findBySlug(($bookSlug));
+
+        $this->assertInstanceOf(Book::class, $book);
+        $this->assertSame(1, $book->getId());
+        $this->assertEquals($bookTitle, $book->getTitle());
+    }
+
+    /**
+     * @test
+     */
+    public function findBySlugOrFail_throws_exception_if_book_do_not_exist()
+    {
+        $this->expectException(NotFoundHttpException::class);
+
+        $this->bookModel->findBySlugOrFail('non-existant-book');
+    }
+
+    /**
+     * @test
+     */
+    public function findBySlugOrFail_returns_found_book()
+    {
+        $bookTitle = 'Book Title to test findBySlug Method';
+        $bookSlug = 'book-title-to-test-findbyslug-method';
+
+        $this->createBook(['title' => $bookTitle]);
+
+        $book = $this->bookModel->findBySlugOrFail(($bookSlug));
 
         $this->assertInstanceOf(Book::class, $book);
         $this->assertSame(1, $book->getId());

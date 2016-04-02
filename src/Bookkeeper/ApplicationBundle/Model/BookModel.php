@@ -3,8 +3,9 @@
 namespace Bookkeeper\ApplicationBundle\Model;
 
 use Symfony\Component\DependencyInjection\ContainerInterface as Container;
-use Bookkeeper\ApplicationBundle\Model\ModelException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Bookkeeper\ApplicationBundle\Entity\Book;
+use Doctrine\ORM\NoResultException;
 
 /**
  * Class BookModel
@@ -109,6 +110,25 @@ class BookModel
         $this->cache->save($key, $book, $this->cacheTtl);
 
         return $book;
+    }
+
+    /**
+     * Find single Book by slug or fail to 404 error if not found.
+     *
+     * @param string $slug
+     *
+     * @return Book
+     *
+     * @throws NotFoundHttpException    If Book not found.
+     */
+    public function findBySlugOrFail($slug)
+    {
+        try {
+            return $this->findBySlug($slug);
+
+        } catch (NoResultException $e) {
+            throw new NotFoundHttpException("Book not found", $e);
+        }
     }
 
     /**
