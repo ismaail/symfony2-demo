@@ -58,7 +58,7 @@ class BookControllerTest extends DoctrineTestCase
      */
     private function mockBookModelGetBookBySlug($slug)
     {
-        $bookModelMock = $this->getBookModelMock(['findBySlug', 'merge']);
+        $bookModelMock = $this->getBookModelMock(['findBySlugOrFail', 'merge']);
 
         $book = new EntityBook();
         $bookReflectionClass = new \ReflectionClass($book);
@@ -68,7 +68,7 @@ class BookControllerTest extends DoctrineTestCase
 
         $bookModelMock
             ->expects($this->once())
-            ->method('findBySlug')
+            ->method('findBySlugOrFail')
             ->with('book-title')
             ->will($this->returnValue($book))
         ;

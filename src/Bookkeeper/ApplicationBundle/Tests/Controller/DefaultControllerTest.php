@@ -30,6 +30,7 @@ class DefaultControllerTest extends WebTestCase
 
     /**
      * @test
+     * @group action_index
      */
     public function indexAction_return_OK_response()
     {
@@ -57,10 +58,11 @@ class DefaultControllerTest extends WebTestCase
 
     /**
      * @test
+     * @group action_show
      */
     public function show_action_return_OK_response()
     {
-        $bookModelMock = $this->getBookModelMock();
+        $bookModelMock = $this->getBookModelMock(['findBySlugOrFail']);
 
         // Create Book Entity
         $book = new EntityBook();
@@ -71,7 +73,7 @@ class DefaultControllerTest extends WebTestCase
 
         $bookModelMock
             ->expects($this->once())
-            ->method('findBySlug')
+            ->method('findBySlugOrFail')
             ->with('book-title')
             ->will($this->returnValue($book))
         ;
@@ -91,8 +93,9 @@ class DefaultControllerTest extends WebTestCase
 
     /**
      * @test
+     * @group action_show
      */
-    public function ShowAction_returns_404_error_if_book_is_not_found()
+    public function Show_action_returns_404_error_if_book_is_not_found()
     {
         $bookModelMock = $this->getBookModelMock();
 
