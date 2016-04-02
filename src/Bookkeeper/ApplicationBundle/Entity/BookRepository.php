@@ -9,6 +9,7 @@ use Doctrine\ORM\NoResultException;
 /**
  * Class BookRepository
  * @package Bookkeeper\ApplicationBundle\Entity
+ * @method Book[] findAll()
  */
 class BookRepository extends EntityRepository
 {

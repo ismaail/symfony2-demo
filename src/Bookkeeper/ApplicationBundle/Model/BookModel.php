@@ -217,9 +217,9 @@ class BookModel
     /**
      * Merge entity object
      *
-     * @param $object
+     * @param Book $object
      *
-     * @return object
+     * @return Book
      */
     public function merge($object)
     {
