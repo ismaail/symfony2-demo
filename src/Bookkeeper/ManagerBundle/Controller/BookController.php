@@ -7,7 +7,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Bookkeeper\ApplicationBundle\Form\BookType;
 use Bookkeeper\ApplicationBundle\Entity\Book;
 use Symfony\Component\HttpFoundation\Request;
-use Doctrine\ORM\NoResultException;
 
 /**
  * Class DefaultController
@@ -74,18 +73,13 @@ class BookController extends Controller
      */
     public function editAction($slug)
     {
-        try {
-            $book = $this->getBookModel()->findBySlug($slug);
-            $form = $this->createBookTypeForm($book, false);
+        $book = $this->getBookModel()->findBySlugOrFail($slug);
+        $form = $this->createBookTypeForm($book, false);
 
-            return $this->render('BookkeeperManagerBundle:Book:edit.html.twig', [
-                'form' => $form->createView(),
-                'book' => $book,
-            ]);
-
-        } catch (NoResultException $e) {
-            throw $this->createNotFoundException("Book not found");
-        }
+        return $this->render('BookkeeperManagerBundle:Book:edit.html.twig', [
+            'form' => $form->createView(),
+            'book' => $book,
+        ]);
     }
 
     /**
@@ -98,32 +92,26 @@ class BookController extends Controller
      */
     public function updateAction(Request $request, $slug)
     {
-        try {
-            $book = $this->getBookModel()->findBySlug($slug);
-            /** @var Book $book */
-            $book = $this->getBookModel()->merge($book);
-            $form = $this->createBookTypeForm($book, false);
+        $book = $this->getBookModel()->findBySlugOrFail($slug);
+        /** @var Book $book */
+        $book = $this->getBookModel()->merge($book);
+        $form = $this->createBookTypeForm($book, false);
 
-            $form->handleRequest($request);
+        $form->handleRequest($request);
 
-            if (! $form->isValid()) {
-                $this->get('session')->getFlashBag()->add('error', 'Error updating the book');
+        if (! $form->isValid()) {
+            $this->get('session')->getFlashBag()->add('error', 'Error updating the book');
 
-                return $this->render('BookkeeperManagerBundle:Book:edit.html.twig', [
-                    'form' => $form->createView(),
-                    'book' => $book,
-                ]);
-            }
-
-            $this->getBookModel()->update($book, $slug);
-
-            $this->get('session')->getFlashBag()->add('success', 'Book has been updated.');
-            return $this->redirectToRoute('book_show', ['slug' => $book->getSlug()]);
-
-
-        } catch (NoResultException $e) {
-            throw $this->createNotFoundException("Book not found");
+            return $this->render('BookkeeperManagerBundle:Book:edit.html.twig', [
+                'form' => $form->createView(),
+                'book' => $book,
+            ]);
         }
+
+        $this->getBookModel()->update($book, $slug);
+
+        $this->get('session')->getFlashBag()->add('success', 'Book has been updated.');
+        return $this->redirectToRoute('book_show', ['slug' => $book->getSlug()]);
     }
 
     /**
@@ -134,27 +122,22 @@ class BookController extends Controller
      */
     public function deleteAction(Request $request, $slug)
     {
-        try {
-            $book = $this->getBookModel()->findBySlug($slug);
-            $form = $this->createBookDeleteForm($book);
+        $book = $this->getBookModel()->findBySlugOrFail($slug);
+        $form = $this->createBookDeleteForm($book);
 
-            $form->handleRequest($request);
+        $form->handleRequest($request);
 
-            if (! $form->isValid()) {
-                $this->get('session')->getFlashBag()->add('error', 'Error deleting the book');
+        if (! $form->isValid()) {
+            $this->get('session')->getFlashBag()->add('error', 'Error deleting the book');
 
-                return $this->redirectToRoute('book_show', ['slug' => $book->getSlug()]);
-            }
-
-            $this->getBookModel()->remove($book);
-
-            $this->get('session')->getFlashBag()->add('success', 'Book has been deleted.');
-
-            return $this->redirectToRoute('home');
-
-        } catch (NoResultException $e) {
-            throw $this->createNotFoundException("Book not found");
+            return $this->redirectToRoute('book_show', ['slug' => $book->getSlug()]);
         }
+
+        $this->getBookModel()->remove($book);
+
+        $this->get('session')->getFlashBag()->add('success', 'Book has been deleted.');
+
+        return $this->redirectToRoute('home');
     }
 
     /**

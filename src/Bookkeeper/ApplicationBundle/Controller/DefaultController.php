@@ -2,12 +2,10 @@
 
 namespace Bookkeeper\ApplicationBundle\Controller;
 
-use Bookkeeper\ApplicationBundle\Exception\ApplicationException;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Bookkeeper\ApplicationBundle\Entity\Book;
-use Doctrine\ORM\NoResultException;
 
 /**
  * Class DefaultController
@@ -48,17 +46,12 @@ class DefaultController extends Controller
      */
     public function showAction($slug)
     {
-        try {
-            $book = $this->getBookModel()->findBySlug($slug);
+        $book = $this->getBookModel()->findBySlugOrFail($slug);
 
-            return $this->render('BookkeeperApplicationBundle:Default:show.html.twig', [
-                'book' => $book,
-                'form' => $this->createBookDeleteForm($book)->createView(),
-            ]);
-
-        } catch (NoResultException $e) {
-            throw $this->createNotFoundException("Book not found");
-        }
+        return $this->render('BookkeeperApplicationBundle:Default:show.html.twig', [
+            'book' => $book,
+            'form' => $this->createBookDeleteForm($book)->createView(),
+        ]);
     }
 
     /**
