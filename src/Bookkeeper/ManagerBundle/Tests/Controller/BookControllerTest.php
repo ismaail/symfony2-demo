@@ -3,8 +3,9 @@
 namespace Bookkeeper\ManagerBundle\Tests\Controller;
 
 use Bookkeeper\ApplicationBundle\Entity\Book as EntityBook;
-use Bookkeeper\ApplicationBundle\Tests\DoctrineTestCase;
 use Bookkeeper\ApplicationBundle\Tests\Traits\ModelMocker;
+use Bookkeeper\ApplicationBundle\Tests\DoctrineTestCase;
+use Bookkeeper\ApplicationBundle\Tests\Traits\BookTrait;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Bookkeeper\UserBundle\Entity\User as EntityUser;
@@ -21,6 +22,7 @@ class BookControllerTest extends DoctrineTestCase
 {
     use UserTrait;
     use ModelMocker;
+    use BookTrait;
 
     /**
      * @var \Symfony\Bundle\FrameworkBundle\Client
@@ -302,13 +304,14 @@ class BookControllerTest extends DoctrineTestCase
      |---------------------------------------------------------
      | Test data manipulation by controller actions.
      |---------------------------------------------------------
+     |
      */
 
     /**
      * @test
      * @group action_create
      */
-    public function it_create_new_Book_for_valide_input_data()
+    public function it_creates_new_Book_for_valide_input_data()
     {
         $input = [
             'application_book' => [
@@ -345,5 +348,113 @@ class BookControllerTest extends DoctrineTestCase
             'http://localhost/show/' . $slug,
             $this->client->getHistory()->current()->getUri()
         );
+    }
+
+    /**
+     * @test
+     * @group action_edit
+     */
+    public function it_returns_404_response_if_editing_non_existant_book()
+    {
+        $this->logIn(EntityUser::ROLE_ADMIN);
+
+        // Assert Book table is empty.
+        $this->assertCount(0, $this->bookRepository->findAll());
+
+        $this->client->request('GET', '/edit/non-existant-book');
+
+        // Assert edting non exitant book returns 404 erro page.
+        $this->assertTrue($this->client->getResponse()->isNotFound());
+    }
+
+    /**
+     * @test
+     * @group action_edit
+     */
+    public function it_returns_404_response_if_updating_non_existant_book()
+    {
+        $this->logIn(EntityUser::ROLE_ADMIN);
+
+        // Assert Book table is empty.
+        $this->assertCount(0, $this->bookRepository->findAll());
+
+        $this->client->request('PUT', '/update/non-existant-book');
+
+        // Assert edting non exitant book returns 404 erro page.
+        $this->assertTrue($this->client->getResponse()->isNotFound());
+    }
+
+    /**
+     * @test
+     * @group action_update
+     */
+    public function it_updates_the_Book_for_valide_input_data()
+    {
+        $this->createBook(['title' => 'Old Book Title']);
+
+        // Asset book table has old Book.
+        $books = $this->bookRepository->findAll();
+        $this->assertCount(1, $books);
+        $this->assertEquals('Old Book Title', $books[0]->getTitle());
+        $this->assertEquals('old-book-title', $books[0]->getSlug());
+
+        // Send PUT request to update the Book.
+        $input = [
+            'application_book' => [
+                'title' => 'New Book Title',
+                'description' => 'Book Short Description',
+                'pages' => 1,
+                '_token' => $this->client->getContainer()->get('security.csrf.token_manager')->getToken('application_book')->getValue(),
+            ]
+        ];
+
+        $this->logIn(EntityUser::ROLE_ADMIN);
+        $this->client->request('PUT', '/update/old-book-title', $input);
+
+        // Asset book table has old Book.
+        $books = $this->bookRepository->findAll();
+        $this->assertCount(1, $books);
+        $this->assertEquals('New Book Title', $books[0]->getTitle());
+        $this->assertEquals('new-book-title', $books[0]->getSlug());
+    }
+
+    /**
+     * @test
+     * @group action_delete
+     */
+    public function it_returns_404_response_if_deleting_non_existing_book()
+    {
+        $this->logIn(EntityUser::ROLE_ADMIN);
+
+        $this->client->request('DELETE', '/delete/non-existant-book');
+
+        // Assert edting non exitant book returns 404 erro page.
+        $this->assertEquals(404, $this->client->getResponse()->getStatusCode());
+        $this->assertTrue($this->client->getResponse()->isNotFound());
+    }
+
+    /**
+     * @test
+     * @group action_delte
+     */
+    public function it_delete_existing_book()
+    {
+        $input = [
+            'form' => [
+                '_token' => $this->getContainer()->get('security.csrf.token_manager')->getToken('form')->getValue(),
+            ]
+        ];
+
+        $this->createBook(['title' => 'Delete Me']);
+
+        // Asset Book table has creted book.
+        $this->assertCount(1, $this->bookRepository->findAll(), 'Book table has no books');
+
+        $this->logIn(EntityUser::ROLE_ADMIN);
+        $this->client->request('DELETE', '/delete/delete-me', $input);
+
+        // Assert Book table is empty.
+        $this->assertEquals(302, $this->client->getResponse()->getStatusCode());
+        $this->assertCount(0, $this->bookRepository->findAll(), 'Book table has books.');
     }
 }
