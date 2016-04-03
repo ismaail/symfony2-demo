@@ -11,6 +11,7 @@ use Symfony\Component\Security\Core\User\UserProviderInterface;
 /**
  * Class UserRepository
  * @package Bookkeeper\UserBundle\Entity
+ * @method User[] findAll()
  */
 class UserRepository extends EntityRepository implements UserProviderInterface
 {
