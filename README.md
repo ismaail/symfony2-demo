@@ -12,7 +12,7 @@ Copy `app/config/parameters.yml.dist` to `app/config/parameters.yml` and update 
 Create database tables
 
 ```
-php app/console doctrine:schema:update --force
+php app/console doctrine:migration:migrate
 ```
 
 Populate the tables with dummy data
