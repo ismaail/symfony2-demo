@@ -65,8 +65,8 @@ class UserControllerTest extends DoctrineTestCase
     }
 
     /**
-     * @test action_signup
-     * @group failing
+     * @test
+     * @group action_signup
      */
     public function it_registers_new_user_with_valide_input()
     {
@@ -109,6 +109,13 @@ class UserControllerTest extends DoctrineTestCase
         // Assert returned response is redirection.
         $this->assertEquals(302, $this->client->getResponse()->getStatusCode());
         $this->assertTrue($this->client->getResponse()->isRedirect());
+
+        /** @var \Symfony\Component\HttpFoundation\Session\Session $session */
+        $session = $this->client->getContainer()->get('session');
+
+        // Assert Session FlashBag has success message.
+        $this->assertTrue($session->getFlashBag()->has('success'), 'FlashBag has no "success" entry.');
+        $this->assertEquals($session->getFlashBag()->get('success'), ['Your account successfully created']);
 
         $this->client->followRedirect();
 
