@@ -122,4 +122,63 @@ class UserControllerTest extends DoctrineTestCase
         // Assert redirection to login page.
         $this->assertStringEndsWith('/login', $this->client->getHistory()->current()->getUri());
     }
+
+    /**
+     * @test
+     * @group action_signup
+     */
+    public function it_returns_signup_page_with_errors_if_invalid_input()
+    {
+        $input = [
+            'user_signup' => [
+                'username' => '',
+                'password' => [
+                    'first' => 123456789,
+                ],
+                'email' => 'doe@example',
+                '_token' => $this->client->getContainer()->get('security.csrf.token_manager')->getToken('user_signup')->getValue(),
+            ],
+        ];
+
+        // BookModel Mock
+        $bookModel = $this->getBookModelMock(['create']);
+        $bookModel
+            ->expects($this->never())
+            ->method('create')
+        ;
+
+        // Mailer Mock
+        $mailerMock = $this->mockMailer(['setTextBody', 'send']);
+        $mailerMock
+            ->expects($this->never())
+            ->method('send')
+        ;
+
+        // Send POST request
+        $crawler = $this->client->request('POST', 'signup', $input);
+
+        // Assert returned response is redirection.
+        $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
+        $this->assertFalse($this->client->getResponse()->isRedirect());
+
+        /** @var \DOMElement $item */
+        $errors = $crawler->filter('form .alert.alert-danger');
+
+        // Assert error messages.
+        $this->assertEquals(
+            $errors->getNode(0)->nodeValue,
+            'This value should not be blank.',
+            'Wrong error message for username field.'
+        );
+        $this->assertEquals(
+            $errors->getNode(1)->nodeValue,
+            'Passwords do not match',
+            'Wrong error message for password field.'
+        );
+        $this->assertEquals(
+            $errors->getNode(3)->nodeValue,
+            'This value is not a valid email address.',
+            'Wrong error message for email field.'
+        );
+    }
 }
