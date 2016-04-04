@@ -2,14 +2,16 @@
 
 namespace Bookkeeper\UserBundle\Tests\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\BrowserKit\Cookie;
 use Bookkeeper\UserBundle\Entity;
 
 /**
  * Class DefaultControllerTest
  * @package Bookkeeper\UserBundle\Tests\Controller
+ * @SuppressWarnings(PHPMD.CamelCaseMethodName)
+ * @codingStandardsIgnoreFile
  */
 class DefaultControllerTest extends WebTestCase
 {
@@ -40,14 +42,20 @@ class DefaultControllerTest extends WebTestCase
         $this->client->getCookieJar()->set($cookie);
     }
 
-    public function testLoginPathIsAccessibleByAnonymousUser()
+    /**
+     * @test
+     */
+    public function anonymous_role_can_access_login_action()
     {
         $this->client->request('GET', '/login');
 
         $this->assertTrue($this->client->getResponse()->isSuccessful());
     }
 
-    public function testLoginPathIsRedirectedForLoggedInUser()
+    /**
+     * @test
+     */
+    public function loggedin_user_is_redirected_in_login_path()
     {
         $this->logIn();
 
@@ -59,14 +67,20 @@ class DefaultControllerTest extends WebTestCase
         );
     }
 
-    public function testLogoutPathIsRedirectedForAnonymousUser()
+    /**
+     * @test
+     */
+    public function anonymous_role_is_redirected_in_logout_path()
     {
         $this->client->request('GET', '/logout');
 
         $this->assertTrue($this->client->getResponse()->isRedirect());
     }
 
-    public function testLogoutPathIsRedirectedForLoggedInUser()
+    /**
+     * @test
+     */
+    public function loggedin_user_is_redirected_in_logout_path()
     {
         $this->logIn();
 

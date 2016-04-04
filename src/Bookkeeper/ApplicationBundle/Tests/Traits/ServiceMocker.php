@@ -2,6 +2,7 @@
 
 namespace Bookkeeper\ApplicationBundle\Tests\Traits;
 
+use Bookkeeper\ApplicationBundle\Service\Mailer;
 use Doctrine\Common\Cache\FilesystemCache;
 
 /**
@@ -36,6 +37,27 @@ trait ServiceMocker
         ;
 
         $this->getContainer()->set('cache', $mock);
+
+        return $mock;
+    }
+
+    /**
+     * Create Application Mailer service mock.
+     *
+     * @param array|null $methods
+     *
+     * @return \PHPUnit_Framework_MockObject_MockObject|Mailer
+     */
+    public function mockMailer($methods = null)
+    {
+        $mock = $this
+            ->getMockBuilder(Mailer::class)
+            ->disableOriginalConstructor()
+            ->setMethods($methods)
+            ->getMock()
+        ;
+
+        $this->getContainer()->set('app_mailer', $mock);
 
         return $mock;
     }
