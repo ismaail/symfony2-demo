@@ -6,6 +6,7 @@ use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use Symfony\Bridge\Doctrine\Security\User\EntityUserProvider;
 use Bookkeeper\UserBundle\Entity\User as EntityUser;
 use Symfony\Component\BrowserKit\Cookie;
+use Bookkeeper\UserBundle\Entity\User;
 
 /**
  * Class UserTrait
@@ -18,10 +19,11 @@ trait UserTrait
 {
     /**
      * @param string $role
+     * @param string|null $token
      *
      * @return \PHPUnit_Framework_MockObject_MockObject|EntityUser
      */
-    public function mockEntityUser($role)
+    public function mockEntityUser($role, $token = null)
     {
         $mockUser = $this
             ->getMockBuilder(EntityUser::class)
@@ -34,9 +36,10 @@ trait UserTrait
             ->expects($this->atLeastOnce())
             ->method('serialize')
             ->will($this->returnValue(sprintf(
-                'a:3:{i:0;i:1;i:1;s:4:"user";i:2;s:%d:"%s";}',
+                'a:4:{i:0;i:1;i:1;s:4:"user";i:2;s:%d:"%s";i:3;%s;}',
                 strlen($role),
-                $role
+                $role,
+                (is_null($token) ? 'N' : sprintf('s:%d:"%s"', strlen($token), $token))
             )))
         ;
 
@@ -53,6 +56,10 @@ trait UserTrait
         $reflectionRolesProperty = $reflectionClass->getProperty('roles');
         $reflectionRolesProperty->setAccessible(true);
         $reflectionRolesProperty->setValue($mockUser, $role);
+        // token property
+        $reflectionTokenProperty = $reflectionClass->getProperty('token');
+        $reflectionTokenProperty->setAccessible(true);
+        $reflectionTokenProperty->setValue($mockUser, $token);
 
         return $mockUser;
     }
@@ -79,12 +86,15 @@ trait UserTrait
 
     /**
      * @param string $role
+     * @param string|null $token
+     *
+     * @return User
      *
      * Mock loggedIn user with role
      */
-    public function logIn($role)
+    public function logIn($role, $token = null)
     {
-        $user = $this->mockEntityUser($role);
+        $user = $this->mockEntityUser($role, $token);
         $this->mockEntityUserProvider($user);
 
         /** @var \Symfony\Component\HttpFoundation\Session\Session $session */
@@ -97,5 +107,7 @@ trait UserTrait
 
         $cookie = new Cookie($session->getName(), $session->getId());
         $this->client->getCookieJar()->set($cookie);
+
+        return $user;
     }
 }
