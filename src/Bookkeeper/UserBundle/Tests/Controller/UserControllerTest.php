@@ -33,6 +33,24 @@ class UserControllerTest extends DoctrineTestCase
     }
 
     /**
+     * @param User $source
+     */
+    private function createUser(User $source)
+    {
+        $user = new User();
+        $user
+            ->setUsername($source->getUsername())
+            ->setPassword('password')
+            ->setRoles($source->getRoles())
+            ->setToken($source->getToken())
+            ->setEmail('test@example.com')
+        ;
+
+        $this->getEntityManager()->persist($user);
+        $this->getEntityManager()->flush();
+    }
+
+    /**
      * @test
      * @group action_signup
      */
@@ -179,6 +197,111 @@ class UserControllerTest extends DoctrineTestCase
             $errors->getNode(3)->nodeValue,
             'This value is not a valid email address.',
             'Wrong error message for email field.'
+        );
+    }
+
+    /**
+     * @test
+     * @group action_activate
+     */
+    public function activate_action_redirect_anonymous_user_to_login()
+    {
+        $this->client->request('GET', '/user/activate?token=valide_token');
+
+        $this->assertEquals(302, $this->client->getResponse()->getStatusCode());
+        $this->assertTrue($this->client->getResponse()->isRedirect());
+
+        $this->client->followRedirect();
+
+        $this->assertStringEndsWith('/login', $this->client->getHistory()->current()->getUri());
+    }
+
+    /**
+     * @test
+     * @group action_activate
+     */
+    public function role_member_can_not_access_activate_action()
+    {
+        $this->logIn(User::ROLE_MEMBER);
+
+        $this->client->request('GET', '/user/activate?token=valide_token');
+
+        $this->assertEquals(403, $this->client->getResponse()->getStatusCode());
+    }
+
+    /**
+     * @test
+     * @group action_activate
+     */
+    public function role_admin_can_not_access_activate_action()
+    {
+        $this->logIn(User::ROLE_ADMIN);
+
+        $this->client->request('GET', '/user/activate?token=valide_token');
+
+        $this->assertEquals(403, $this->client->getResponse()->getStatusCode());
+    }
+
+    /**
+     * @test
+     * @group action_activate
+     */
+    public function it_returns_normal_page_if_no_activation_token_is_provided()
+    {
+        $this->logIn(User::ROLE_PENDING, 'valide-token');
+
+        $crawler = $this->client->request('GET', '/user/activate');
+
+        $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
+
+        $this->assertCount(0, $crawler->filter('.alert.alert-danger'));
+    }
+
+    /**
+     * @test
+     * @group action_activate
+     */
+    public function it_activates_pending_user()
+    {
+        $user = $this->logIn(User::ROLE_PENDING, 'valide-token');
+        $this->createUser($user);
+
+        /** @var \Bookkeeper\UserBundle\Model\UserModel $userModel */
+        $userModel = $this->getContainer()->get('user_model');
+
+        // Assert logged user has role pending before activation
+        $user = $userModel->findById(1);
+        $this->assertEquals([User::ROLE_PENDING], $user->getRoles(), 'User has not the role PENDING.');
+
+        $this->client->request('GET', '/user/activate?token=valide-token');
+
+        $this->assertEquals(302, $this->client->getResponse()->getStatusCode());
+        $this->assertTrue($this->client->getResponse()->isRedirect('/'));
+
+        // Assert logged role has been activated.
+        $user = $userModel->findById(1);
+        $this->assertEquals([User::ROLE_MEMBER], $user->getRoles(), 'User has not the role MEMBER.');
+
+        $this->client->followRedirect();
+
+        $this->assertStringEndsWith('/', $this->client->getHistory()->current()->getUri());
+    }
+
+    /**
+     * @test
+     * @group action_activate
+     */
+    public function it_returns_error_if_wrong_token_activation()
+    {
+        $this->logIn(User::ROLE_PENDING, 'valide-token');
+
+        $crawler = $this->client->request('GET', '/user/activate?token=wrong-token');
+
+        $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
+
+        $this->assertEquals(
+            'Wrong token value',
+            $crawler->filter('.alert.alert-danger')->getNode(0)->nodeValue
         );
     }
 }
