@@ -70,28 +70,25 @@ class UserController extends Controller
     {
         $token = $request->get('token');
 
-        if (null !== $token) {
-            /** @var Entity\User $user */
-            $user = $this->get('security.token_storage')->getToken()->getUser();
-
-            if ($token === $user->getToken()) {
-                // Activate user account
-                $this->getUserModel()->activate($user);
-
-                $this->get('session')->getFlashBag()->add('success', 'Your account has been successfully activated');
-
-                if ($this->isLoggedIn()) {
-                    return $this->redirectToRoute('home');
-                } else {
-                    return $this->redirectToRoute('login');
-                }
-
-            } else {
-                $this->get('session')->getFlashBag()->add('error', 'Wrong token value');
-            }
+        if (null === $token) {
+            return $this->render('BookkeeperUserBundle:User:activate.html.twig');
         }
 
-        return $this->render('BookkeeperUserBundle:User:activate.html.twig');
+        /** @var Entity\User $user */
+        $user = $this->getUser();
+
+        if ($token !== $user->getToken()) {
+            $this->get('session')->getFlashBag()->add('error', 'Wrong token value');
+
+            return $this->render('BookkeeperUserBundle:User:activate.html.twig');
+        }
+
+        // Activate user account
+        $this->getUserModel()->activate($user->getId());
+
+        $this->get('session')->getFlashBag()->add('success', 'Your account has been successfully activated');
+
+        return $this->redirectToRoute('home');
     }
 
     /**
