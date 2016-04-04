@@ -77,20 +77,42 @@ class UserModel
     }
 
     /**
+     * @param int $id
+     *
+     * @return User
+     *
+     * @throws \Doctrine\ORM\NoResultException
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
+    public function findById($id)
+    {
+        $qb = $this->getEntityManager()->createQueryBuilder();
+        $qb
+            ->select('u')
+            ->from('BookkeeperUserBundle:User', 'u')
+            ->where('u.id = :id')
+            ->setParameter('id', $id)
+        ;
+
+        return $qb->getQuery()->getSingleResult();
+    }
+
+    /**
      * Activate user account by setting role to MEMBER
      *
-     * @param User $user
+     * @param int $id
      *
      * @return User
      *
      * @throws ModelException
      */
-    public function activate(User $user)
+    public function activate($id)
     {
         try {
             $em = $this->getEntityManager();
             $em->beginTransaction();
 
+            $user = $this->findById($id);
             $user->setRoles([User::ROLE_MEMBER]);
             $user->setToken(null);
 
