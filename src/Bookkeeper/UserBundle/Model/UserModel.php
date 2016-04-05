@@ -2,9 +2,9 @@
 
 namespace Bookkeeper\UserBundle\Model;
 
-use Symfony\Component\DependencyInjection\ContainerInterface as Container;
 use Bookkeeper\UserBundle\Security\Token;
 use Bookkeeper\UserBundle\Entity\User;
+use Doctrine\ORM\EntityManager;
 
 /**
  * Class UserModel
@@ -13,34 +13,25 @@ use Bookkeeper\UserBundle\Entity\User;
 class UserModel
 {
     /**
-     * @var Container
-     */
-    protected $container;
-
-    /**
-     * @var \Doctrine\ORM\EntityManager
+     * @var EntityManager
      */
     protected $entityManager;
 
     /**
-     * @param Container $container
+     * @param EntityManager $entityManager
      */
-    public function __construct(Container $container)
+    public function setEntityManager(EntityManager $entityManager)
     {
-        $this->container = $container;
+        $this->entityManager = $entityManager;
     }
 
     /**
      * Get Doctrine entity manager
      *
-     * @return \Doctrine\ORM\EntityManager
+     * @return EntityManager
      */
     protected function getEntityManager()
     {
-        if (! $this->entityManager) {
-            $this->entityManager = $this->container->get('doctrine.orm.entity_manager');
-        }
-
         return $this->entityManager;
     }
 

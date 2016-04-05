@@ -2,7 +2,9 @@
 services:
     user_model:
         class: Bookkeeper\UserBundle\Model\UserModel
-        arguments: ['@service_container']
+        scope: container
+        calls:
+            - [ setEntityManager, [ "@doctrine.orm.entity_manager" ] ]
 
     access_listener:
         class: Bookkeeper\UserBundle\Security\AccessListener
