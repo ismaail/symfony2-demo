@@ -2,10 +2,10 @@
 
 namespace Bookkeeper\ApplicationBundle\Model;
 
-use Symfony\Component\DependencyInjection\ContainerInterface as Container;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Bookkeeper\ApplicationBundle\Entity\Book;
 use Doctrine\ORM\NoResultException;
+use Doctrine\ORM\EntityManager;
 
 /**
  * Class BookModel
@@ -13,11 +13,6 @@ use Doctrine\ORM\NoResultException;
  */
 class BookModel
 {
-    /**
-     * @var Container
-     */
-    protected $container;
-
     /**
      * @var \Doctrine\ORM\EntityManager
      */
@@ -37,26 +32,38 @@ class BookModel
     protected $cacheTtl;
 
     /**
-     * @param Container $container
+     * @var \Knp\Component\Pager\Paginator
      */
-    public function __construct(Container $container)
-    {
-        $this->container = $container;
+    protected $paginator;
 
-        $this->setCache();
+    /**
+     * @param EntityManager $entityManager
+     */
+    public function setEntityManager(EntityManager $entityManager)
+    {
+        $this->entityManager = $entityManager;
     }
 
     /**
      * Set cache options
+     *
+     * @param \Doctrine\Common\Cache\FilesystemCache $cache
+     * @param array $parameters
      */
-    protected function setCache()
+    public function setCache($cache, $parameters)
     {
-        $params = $this->container->getParameter('cache');
+        $this->cache = $cache;
+        $this->cache->setNamespace($parameters['namespace']);
 
-        $this->cache = $this->container->get('cache');
-        $this->cache->setNamespace($params['namespace']);
+        $this->cacheTtl = $parameters['ttl'];
+    }
 
-        $this->cacheTtl = $params['ttl'];
+    /**
+     * @param \Knp\Component\Pager\Paginator $paginator
+     */
+    public function setPaginator($paginator)
+    {
+        $this->paginator = $paginator;
     }
 
     /**
@@ -76,9 +83,7 @@ class BookModel
            ->orderBy('b.id', 'asc')
         ;
 
-        /** @var \Knp\Component\Pager\Paginator $paginator */
-        $paginator  = $this->container->get('knp_paginator');
-        $pagination = $paginator->paginate(
+        $pagination = $this->paginator->paginate(
             $qb->getQuery(),
             $page,
             $limit
@@ -213,10 +218,6 @@ class BookModel
      */
     protected function getEntityManager()
     {
-        if (! $this->entityManager) {
-            $this->entityManager = $this->container->get('doctrine.orm.entity_manager');
-        }
-
         return $this->entityManager;
     }
 

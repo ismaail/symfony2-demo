@@ -2,7 +2,11 @@
 services:
     book_model:
         class: Bookkeeper\ApplicationBundle\Model\BookModel
-        arguments: ['@service_container']
+        scope: container
+        calls:
+            - [ setEntityManager, [ "@doctrine.orm.entity_manager" ] ]
+            - [ setCache, [ "@cache", "%cache%" ] ]
+            - [ setPaginator, [ "@knp_paginator" ] ]
 
     app_mailer:
         class: Bookkeeper\ApplicationBundle\Service\Mailer

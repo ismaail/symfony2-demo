@@ -32,6 +32,9 @@ class BookModelTest extends DoctrineTestCase
         $this->mockDisabledCacheService();
 
         $this->bookModel = new BookModel($this->getContainer());
+        $this->bookModel->setEntityManager($this->getContainer()->get('doctrine.orm.entity_manager'));
+        $this->bookModel->setPaginator($this->getContainer()->get('knp_paginator'));
+        $this->bookModel->setCache($this->getContainer()->get('cache'),$this->getContainer()->getParameter('cache'));
     }
 
     /**
