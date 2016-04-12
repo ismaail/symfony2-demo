@@ -54,6 +54,7 @@ doctrine:
         password: "%database_password%"
         charset:  UTF8
         schema_filter: ~^(?!t_)~
+        server_version: "%database_version%"
         # if using pdo_sqlite as your database driver:
         #   1. add the path in parameters.yml
         #     e.g. database_path: "%kernel.root_dir%/data/data.db3"
