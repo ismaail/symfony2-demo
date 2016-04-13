@@ -2,7 +2,6 @@
 services:
     book_model:
         class: Bookkeeper\ApplicationBundle\Model\BookModel
-        scope: container
         calls:
             - [ setEntityManager, [ "@doctrine.orm.entity_manager" ] ]
             - [ setCache, [ "@cache", "%cache%" ] ]
